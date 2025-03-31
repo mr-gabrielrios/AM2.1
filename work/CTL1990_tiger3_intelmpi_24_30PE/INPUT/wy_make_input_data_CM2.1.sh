@@ -1,0 +1,1 @@
+/scratch/gpfs/GEOCLIM/wenchang/modelInput/CM2.1/input_v2025/wy_make_input_data_CM2.1.sh

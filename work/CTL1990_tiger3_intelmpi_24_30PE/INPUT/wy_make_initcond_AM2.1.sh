@@ -1,0 +1,1 @@
+/scratch/gpfs/GEOCLIM/wenchang/modelInput/AM2.1/initcond_wy/CTL1990_tigercpu_intelmpi_18_30PE/01210101_nocal/wy_make_initcond_AM2.1.sh
