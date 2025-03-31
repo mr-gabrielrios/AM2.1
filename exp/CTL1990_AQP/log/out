@@ -1,0 +1,1624 @@
+set thisdir = /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/exp/CTL1990_AQP
+set thisfile = `ls run_*PE`
+ls run_AM2.1_CTL1990_30PE
+set cont_scrpt = /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/exp/CTL1990_AQP/run_AM2.1_CTL1990_30PE
+set platform = tiger3_intelmpi_24
+set model_type = AM2.1
+set mom_version = p1
+set model_name = AM2.1
+set RootMOM = /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1
+set model_executable = /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/idealized_exec_tiger3_intelmpi_24/CM2.1p1_dynamic/fms_CM2.1p1_dynamic.x
+set Root = /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1
+set npes = 30
+set expname = CTL1990_AQP_tiger3_intelmpi_24_30PE
+set workdir = /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/work/CTL1990_AQP_tiger3_intelmpi_24_30PE
+set num_executions = 1
+set stop_date = 01010201
+set namelist = /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/exp/CTL1990_AQP/AM2.1_namelists_CTL1990_30PE
+set diagtable = /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/exp/AM2.1_diag_table
+set fieldtable = /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/exp/AM2.1_field_table
+set datatable = /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/exp/AM2.1_data_table
+set modelInput_dir = /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input
+set input_data_dir = /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP
+set initCond_dir = /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/init_cond_AQP/01210101_nocal
+set sst_data = /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/hadisst_sst.clim.1986-2005.forAM2.1.nc
+set time_stamp = /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/bin/time_stamp.csh
+set mppnccombine = /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/bin/mppnccombine.tiger3_intelmpi_24
+source /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/bin/environs.tiger3_intelmpi_24
+source /usr/share/Modules/init/csh
+eval `/usr/bin/tclsh '/usr/share/Modules/libexec/modulecmd.tcl' csh autoinit`
+/usr/bin/tclsh /usr/share/Modules/libexec/modulecmd.tcl csh autoinit
+if ( 0 && 0 ) alias module set _histchars = $histchars; unset histchars; set _prompt=$prompt:q; set prompt=""; eval "`/usr/bin/tclsh '/usr/share/Modules/libexec/modulecmd.tcl' csh !*:q`"; set _exit="$status"; set histchars = $_histchars; unset _histchars; set prompt=$_prompt:q; unset _prompt; test 0 = $_exit
+if ( 0 && ! 0 ) alias module set _histchars = $histchars; unset histchars; eval "`/usr/bin/tclsh '/usr/share/Modules/libexec/modulecmd.tcl' csh !*:q`"; set _exit="$status"; set histchars = $_histchars; unset _histchars; test 0 = $_exit
+if ( ! 0 && 0 ) alias module set _prompt=$prompt:q; set prompt=""; eval "`/usr/bin/tclsh '/usr/share/Modules/libexec/modulecmd.tcl' csh !*:q`"; set _exit="$status"; set prompt=$_prompt:q; unset _prompt; test 0 = $_exit
+if ( ! 0 && ! 0 ) alias module eval "`/usr/bin/tclsh '/usr/share/Modules/libexec/modulecmd.tcl' csh !*:q`";
+alias module eval "`/usr/bin/tclsh '/usr/share/Modules/libexec/modulecmd.tcl' csh !*:q`";
+alias ml module ml !*
+setenv MODULES_CMD /usr/share/Modules/libexec/modulecmd.tcl
+unsetenv __MODULES_AUTOINIT_INPROGRESS
+setenv MODULESHOME /usr/share/Modules
+test 0
+eval `/usr/bin/tclsh '/usr/share/Modules/libexec/modulecmd.tcl' csh purge`
+/usr/bin/tclsh /usr/share/Modules/libexec/modulecmd.tcl csh purge
+eval `/usr/bin/tclsh '/usr/share/Modules/libexec/modulecmd.tcl' csh load intel-oneapi/2024.2`
+/usr/bin/tclsh /usr/share/Modules/libexec/modulecmd.tcl csh load intel-oneapi/2024.2
+Loading intel-oneapi/2024.2
+  Loading requirement: intel-tbb/2021.13 intel-rt/2024.2
+setenv OCL_ICD_FILENAMES /opt/intel/oneapi/compiler/2024.2/lib/libintelocl.so
+setenv CPATH /opt/intel/oneapi/tbb/2021.13/include
+setenv LD_LIBRARY_PATH /opt/intel/oneapi/compiler/2024.2/opt/compiler/lib:/opt/intel/oneapi/compiler/2024.2/lib:/opt/intel/oneapi/tbb/2021.13/lib
+setenv MANPATH /opt/intel/oneapi/compiler/2024.2/share/man:/usr/share/man:/usr/local/share/man:/opt/puppetlabs/puppet/share/man
+setenv LIBRARY_PATH /opt/intel/oneapi/compiler/2024.2/lib:/opt/intel/oneapi/tbb/2021.13/lib
+setenv CMPLR_ROOT /opt/intel/oneapi/compiler/2024.2
+setenv CMAKE_PREFIX_PATH /opt/intel/oneapi/compiler/2024.2:/opt/intel/oneapi/tbb/2021.13
+setenv LOADEDMODULES intel-tbb/2021.13:intel-rt/2024.2:intel-oneapi/2024.2
+setenv _LMFILES_ /opt/share/Modules/modulefiles/intel-tbb/2021.13:/opt/share/Modules/modulefiles/intel-rt/2024.2:/opt/share/Modules/modulefiles/intel-oneapi/2024.2
+setenv PKG_CONFIG_PATH /opt/intel/oneapi/compiler/2024.2/lib/pkgconfig:/opt/intel/oneapi/tbb/2021.13/lib/pkgconfig
+setenv __MODULES_LMTAG intel-tbb/2021.13&auto-loaded:intel-rt/2024.2&auto-loaded
+setenv TBBROOT /opt/intel/oneapi/tbb/2021.13
+unsetenv INTEL_TARGET_ARCH_IA32
+setenv __MODULES_LMPREREQ intel-oneapi/2024.2&intel-tbb/2021.13&intel-rt/2024.2
+setenv __MODULES_SHARE_DIAGUTIL_PATH /opt/intel/oneapi/compiler/2024.2/etc/compiler/sys_check/sys_check.sh:2
+setenv NLSPATH /opt/intel/oneapi/compiler/2024.2/lib/compiler/locale/%l_%t/%N
+setenv PATH /opt/intel/oneapi/compiler/2024.2/bin:/home/gr7610/miniforge3/envs/dev/bin:/home/gr7610/miniforge3/condabin:/projects/GEOCLIM/software/common/bin:/usr/share/Modules/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/puppetlabs/bin:/opt/dell/srvadmin/bin
+setenv DIAGUTIL_PATH /opt/intel/oneapi/compiler/2024.2/etc/compiler/sys_check/sys_check.sh
+test 0
+eval `/usr/bin/tclsh '/usr/share/Modules/libexec/modulecmd.tcl' csh load intel-mpi/oneapi/2021.13`
+/usr/bin/tclsh /usr/share/Modules/libexec/modulecmd.tcl csh load intel-mpi/oneapi/2021.13
+setenv LD_LIBRARY_PATH /opt/intel/oneapi/mpi/2021.13/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.13/lib:/opt/intel/oneapi/compiler/2024.2/opt/compiler/lib:/opt/intel/oneapi/compiler/2024.2/lib:/opt/intel/oneapi/tbb/2021.13/lib
+setenv CPATH /opt/intel/oneapi/mpi/2021.13/include:/opt/intel/oneapi/tbb/2021.13/include
+setenv I_MPI_ROOT /opt/intel/oneapi/mpi/2021.13
+setenv LIBRARY_PATH /opt/intel/oneapi/mpi/2021.13/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.13/lib:/opt/intel/oneapi/compiler/2024.2/lib:/opt/intel/oneapi/tbb/2021.13/lib
+setenv MANPATH /opt/intel/oneapi/mpi/2021.13/share/man:/opt/intel/oneapi/compiler/2024.2/share/man:/usr/share/man:/usr/local/share/man:/opt/puppetlabs/puppet/share/man
+setenv SLURM_MPI_TYPE pmi2
+setenv _LMFILES_ /opt/share/Modules/modulefiles/intel-tbb/2021.13:/opt/share/Modules/modulefiles/intel-rt/2024.2:/opt/share/Modules/modulefiles/intel-oneapi/2024.2:/opt/share/Modules/modulefiles/intel-mpi/oneapi/2021.13
+setenv LOADEDMODULES intel-tbb/2021.13:intel-rt/2024.2:intel-oneapi/2024.2:intel-mpi/oneapi/2021.13
+setenv I_MPI_HYDRA_BOOTSTRAP slurm
+setenv MPICH_CXX icpx
+setenv __MODULES_LMPREREQ intel-oneapi/2024.2&intel-tbb/2021.13&intel-rt/2024.2:intel-mpi/oneapi/2021.13&intel-oneapi
+setenv MPICH_F90 ifx
+setenv __MODULES_LMCONFLICT intel-mpi/oneapi/2021.13&intel-mpi&openmpi&mpich&mvapich
+setenv MPICH_FC ifx
+setenv CLASSPATH /opt/intel/oneapi/mpi/2021.13/share/java/mpi.jar
+setenv MPICH_F77 ifx
+setenv PATH /opt/intel/oneapi/mpi/2021.13/opt/mpi/libfabric/bin:/opt/intel/oneapi/mpi/2021.13/bin:/opt/intel/oneapi/compiler/2024.2/bin:/home/gr7610/miniforge3/envs/dev/bin:/home/gr7610/miniforge3/condabin:/projects/GEOCLIM/software/common/bin:/usr/share/Modules/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/puppetlabs/bin:/opt/dell/srvadmin/bin
+setenv FI_PROVIDER_PATH /opt/intel/oneapi/mpi/2021.13/opt/mpi/libfabric/lib/prov:/usr/lib64/libfabric
+setenv MPICH_CC icx
+setenv I_MPI_PMI_LIBRARY /usr/lib64/libpmi2.so
+test 0
+eval `/usr/bin/tclsh '/usr/share/Modules/libexec/modulecmd.tcl' csh load netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2`
+/usr/bin/tclsh /usr/share/Modules/libexec/modulecmd.tcl csh load netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2
+setenv LD_LIBRARY_PATH /usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/lib64:/opt/intel/oneapi/mpi/2021.13/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.13/lib:/opt/intel/oneapi/compiler/2024.2/opt/compiler/lib:/opt/intel/oneapi/compiler/2024.2/lib:/opt/intel/oneapi/tbb/2021.13/lib
+setenv CPATH /opt/intel/oneapi/mpi/2021.13/include:/opt/intel/oneapi/tbb/2021.13/include:/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/include
+setenv LIBRARY_PATH /usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/lib64:/opt/intel/oneapi/mpi/2021.13/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.13/lib:/opt/intel/oneapi/compiler/2024.2/lib:/opt/intel/oneapi/tbb/2021.13/lib
+setenv MANPATH /usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/share/man:/opt/intel/oneapi/mpi/2021.13/share/man:/opt/intel/oneapi/compiler/2024.2/share/man:/usr/share/man:/usr/local/share/man:/opt/puppetlabs/puppet/share/man
+setenv _LMFILES_ /opt/share/Modules/modulefiles/intel-tbb/2021.13:/opt/share/Modules/modulefiles/intel-rt/2024.2:/opt/share/Modules/modulefiles/intel-oneapi/2024.2:/opt/share/Modules/modulefiles/intel-mpi/oneapi/2021.13:/usr/local/share/Modules/modulefiles/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2
+setenv LOADEDMODULES intel-tbb/2021.13:intel-rt/2024.2:intel-oneapi/2024.2:intel-mpi/oneapi/2021.13:netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2
+setenv LOCAL_CXXFLAGS -I/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/include
+setenv LOCAL_CFLAGS -I/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/include
+setenv PKG_CONFIG_PATH /usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/lib64/pkgconfig:/opt/intel/oneapi/compiler/2024.2/lib/pkgconfig:/opt/intel/oneapi/tbb/2021.13/lib/pkgconfig
+setenv INCLUDE -I/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/include
+setenv LDFLAGS -L/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/lib64
+setenv __MODULES_LMPREREQ intel-oneapi/2024.2&intel-tbb/2021.13&intel-rt/2024.2:intel-mpi/oneapi/2021.13&intel-oneapi:netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2&hdf5|intel-oneapi|intel-mpi
+setenv LOCAL_INCLUDE -I/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/include
+setenv LOCAL_LDFLAGS -L/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/lib64
+setenv __MODULES_LMCONFLICT intel-mpi/oneapi/2021.13&intel-mpi&openmpi&mpich&mvapich:netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2&netcdf
+setenv NETCDFDIR /usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2
+setenv FFLAGS -I/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/include
+setenv LOCAL_FFLAGS -I/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/include
+setenv PATH /usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/bin:/opt/intel/oneapi/mpi/2021.13/opt/mpi/libfabric/bin:/opt/intel/oneapi/mpi/2021.13/bin:/opt/intel/oneapi/compiler/2024.2/bin:/home/gr7610/miniforge3/envs/dev/bin:/home/gr7610/miniforge3/condabin:/projects/GEOCLIM/software/common/bin:/usr/share/Modules/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/puppetlabs/bin:/opt/dell/srvadmin/bin
+test 0
+eval `/usr/bin/tclsh '/usr/share/Modules/libexec/modulecmd.tcl' csh load hdf5/oneapi-2024.2/intel-mpi/1.14.4`
+/usr/bin/tclsh /usr/share/Modules/libexec/modulecmd.tcl csh load hdf5/oneapi-2024.2/intel-mpi/1.14.4
+Loading hdf5/oneapi-2024.2/intel-mpi/1.14.4
+  Unloading dependent: netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2
+  Reloading dependent: netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2
+setenv LD_LIBRARY_PATH /usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/lib64:/usr/local/hdf5/oneapi-2024.2/intel-mpi/1.14.4/lib64:/opt/intel/oneapi/mpi/2021.13/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.13/lib:/opt/intel/oneapi/compiler/2024.2/opt/compiler/lib:/opt/intel/oneapi/compiler/2024.2/lib:/opt/intel/oneapi/tbb/2021.13/lib
+setenv CPATH /opt/intel/oneapi/mpi/2021.13/include:/opt/intel/oneapi/tbb/2021.13/include:/usr/local/hdf5/oneapi-2024.2/intel-mpi/1.14.4/include:/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/include
+setenv LIBRARY_PATH /usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/lib64:/usr/local/hdf5/oneapi-2024.2/intel-mpi/1.14.4/lib64:/opt/intel/oneapi/mpi/2021.13/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.13/lib:/opt/intel/oneapi/compiler/2024.2/lib:/opt/intel/oneapi/tbb/2021.13/lib
+setenv MANPATH /usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/share/man:/usr/local/hdf5/oneapi-2024.2/intel-mpi/1.14.4/share/man:/opt/intel/oneapi/mpi/2021.13/share/man:/opt/intel/oneapi/compiler/2024.2/share/man:/usr/share/man:/usr/local/share/man:/opt/puppetlabs/puppet/share/man
+setenv _LMFILES_ /opt/share/Modules/modulefiles/intel-tbb/2021.13:/opt/share/Modules/modulefiles/intel-rt/2024.2:/opt/share/Modules/modulefiles/intel-oneapi/2024.2:/opt/share/Modules/modulefiles/intel-mpi/oneapi/2021.13:/usr/local/share/Modules/modulefiles/hdf5/oneapi-2024.2/intel-mpi/1.14.4:/usr/local/share/Modules/modulefiles/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2
+setenv LOADEDMODULES intel-tbb/2021.13:intel-rt/2024.2:intel-oneapi/2024.2:intel-mpi/oneapi/2021.13:hdf5/oneapi-2024.2/intel-mpi/1.14.4:netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2
+setenv LOCAL_CXXFLAGS -I/usr/local/hdf5/oneapi-2024.2/intel-mpi/1.14.4/include -I/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/include
+setenv LOCAL_CFLAGS -I/usr/local/hdf5/oneapi-2024.2/intel-mpi/1.14.4/include -I/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/include
+setenv PKG_CONFIG_PATH /usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/lib64/pkgconfig:/opt/intel/oneapi/compiler/2024.2/lib/pkgconfig:/opt/intel/oneapi/tbb/2021.13/lib/pkgconfig
+setenv INCLUDE -I/usr/local/hdf5/oneapi-2024.2/intel-mpi/1.14.4/include -I/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/include
+setenv LDFLAGS -L/usr/local/hdf5/oneapi-2024.2/intel-mpi/1.14.4/lib64 -L/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/lib64
+setenv FCFLAGS -I/usr/local/hdf5/oneapi-2024.2/intel-mpi/1.14.4/include
+setenv HDF5DIR /usr/local/hdf5/oneapi-2024.2/intel-mpi/1.14.4
+setenv __MODULES_LMPREREQ intel-oneapi/2024.2&intel-tbb/2021.13&intel-rt/2024.2:intel-mpi/oneapi/2021.13&intel-oneapi:hdf5/oneapi-2024.2/intel-mpi/1.14.4&intel-mpi|intel-oneapi:netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2&hdf5|intel-oneapi|intel-mpi
+setenv LOCAL_INCLUDE -I/usr/local/hdf5/oneapi-2024.2/intel-mpi/1.14.4/include -I/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/include
+setenv LOCAL_LDFLAGS -L/usr/local/hdf5/oneapi-2024.2/intel-mpi/1.14.4/lib64 -L/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/lib64
+setenv LOCAL_FCFLAGS -I/usr/local/hdf5/oneapi-2024.2/intel-mpi/1.14.4/include
+setenv __MODULES_LMCONFLICT intel-mpi/oneapi/2021.13&intel-mpi&openmpi&mpich&mvapich:hdf5/oneapi-2024.2/intel-mpi/1.14.4&hdf5:netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2&netcdf
+setenv HDF5_ROOT /usr/local/hdf5/oneapi-2024.2/intel-mpi/1.14.4
+setenv NETCDFDIR /usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2
+setenv FFLAGS -I/usr/local/hdf5/oneapi-2024.2/intel-mpi/1.14.4/include -I/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/include
+setenv LOCAL_FFLAGS -I/usr/local/hdf5/oneapi-2024.2/intel-mpi/1.14.4/include -I/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/include
+setenv PATH /usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/bin:/usr/local/hdf5/oneapi-2024.2/intel-mpi/1.14.4/bin:/opt/intel/oneapi/mpi/2021.13/opt/mpi/libfabric/bin:/opt/intel/oneapi/mpi/2021.13/bin:/opt/intel/oneapi/compiler/2024.2/bin:/home/gr7610/miniforge3/envs/dev/bin:/home/gr7610/miniforge3/condabin:/projects/GEOCLIM/software/common/bin:/usr/share/Modules/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/puppetlabs/bin:/opt/dell/srvadmin/bin
+test 0
+eval `/usr/bin/tclsh '/usr/share/Modules/libexec/modulecmd.tcl' csh load intel-mkl/2024.2`
+/usr/bin/tclsh /usr/share/Modules/libexec/modulecmd.tcl csh load intel-mkl/2024.2
+setenv CPATH /opt/intel/oneapi/mkl/2024.2/include:/opt/intel/oneapi/mpi/2021.13/include:/opt/intel/oneapi/tbb/2021.13/include:/usr/local/hdf5/oneapi-2024.2/intel-mpi/1.14.4/include:/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/include
+setenv LD_LIBRARY_PATH /opt/intel/oneapi/mkl/2024.2/lib:/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/lib64:/usr/local/hdf5/oneapi-2024.2/intel-mpi/1.14.4/lib64:/opt/intel/oneapi/mpi/2021.13/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.13/lib:/opt/intel/oneapi/compiler/2024.2/opt/compiler/lib:/opt/intel/oneapi/compiler/2024.2/lib:/opt/intel/oneapi/tbb/2021.13/lib
+setenv MKLROOT /opt/intel/oneapi/mkl/2024.2
+setenv LIBRARY_PATH /opt/intel/oneapi/mkl/2024.2/lib:/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/lib64:/usr/local/hdf5/oneapi-2024.2/intel-mpi/1.14.4/lib64:/opt/intel/oneapi/mpi/2021.13/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.13/lib:/opt/intel/oneapi/compiler/2024.2/lib:/opt/intel/oneapi/tbb/2021.13/lib
+setenv __MODULES_LMPREREQ intel-oneapi/2024.2&intel-tbb/2021.13&intel-rt/2024.2:intel-mpi/oneapi/2021.13&intel-oneapi:hdf5/oneapi-2024.2/intel-mpi/1.14.4&intel-mpi|intel-oneapi:netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2&hdf5|intel-oneapi|intel-mpi:intel-mkl/2024.2&intel-tbb/2021.13&intel-rt/2024.2
+setenv _LMFILES_ /opt/share/Modules/modulefiles/intel-tbb/2021.13:/opt/share/Modules/modulefiles/intel-rt/2024.2:/opt/share/Modules/modulefiles/intel-oneapi/2024.2:/opt/share/Modules/modulefiles/intel-mpi/oneapi/2021.13:/usr/local/share/Modules/modulefiles/hdf5/oneapi-2024.2/intel-mpi/1.14.4:/usr/local/share/Modules/modulefiles/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2:/opt/share/Modules/modulefiles/intel-mkl/2024.2
+setenv LOADEDMODULES intel-tbb/2021.13:intel-rt/2024.2:intel-oneapi/2024.2:intel-mpi/oneapi/2021.13:hdf5/oneapi-2024.2/intel-mpi/1.14.4:netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2:intel-mkl/2024.2
+setenv NLSPATH /opt/intel/oneapi/mkl/2024.2/share/locale/%l_%t/%N:/opt/intel/oneapi/compiler/2024.2/lib/compiler/locale/%l_%t/%N
+setenv CMAKE_PREFIX_PATH /opt/intel/oneapi/mkl/2024.2/lib/cmake:/opt/intel/oneapi/compiler/2024.2:/opt/intel/oneapi/tbb/2021.13
+setenv PKG_CONFIG_PATH /opt/intel/oneapi/mkl/2024.2/lib/pkgconfig:/usr/local/netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2/lib64/pkgconfig:/opt/intel/oneapi/compiler/2024.2/lib/pkgconfig:/opt/intel/oneapi/tbb/2021.13/lib/pkgconfig
+test 0
+which mpiifort
+mpiifort: Command not found.
+which mpiicc
+mpiicc: Command not found.
+eval `/usr/bin/tclsh '/usr/share/Modules/libexec/modulecmd.tcl' csh list`
+/usr/bin/tclsh /usr/share/Modules/libexec/modulecmd.tcl csh list
+Currently Loaded Modulefiles:
+ 1) intel-tbb/2021.13 <aL>                             7) intel-mkl/2024.2  
+ 2) intel-rt/2024.2 <aL>                              
+ 3) intel-oneapi/2024.2                               
+ 4) intel-mpi/oneapi/2021.13                          
+ 5) hdf5/oneapi-2024.2/intel-mpi/1.14.4               
+ 6) netcdf/oneapi-2024.2/hdf5-1.14.4/intel-mpi/4.9.2  
+
+Key:
+<module-tag>  <aL>=auto-loaded  
+setenv MAIN_PROGRAM coupler_main.o
+if ( ! -d /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/work/CTL1990_AQP_tiger3_intelmpi_24_30PE ) then
+if ( ! -e /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/exp/CTL1990_AQP/work ) then
+cd /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/work/CTL1990_AQP_tiger3_intelmpi_24_30PE
+foreach d ( INPUT RESTART ASCII POSTP HISTORY )
+if ( ! -d INPUT ) then
+end
+if ( ! -d RESTART ) then
+end
+if ( ! -d ASCII ) then
+end
+if ( ! -d POSTP ) then
+end
+if ( ! -d HISTORY ) then
+end
+if ( ! -f input.nml ) then
+if ( ! -f diag_table ) then
+if ( ! -f field_table ) then
+if ( ! -f data_table ) then
+if ( ! -f fms_CM2.1p1_dynamic.x ) then
+cd /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/work/CTL1990_AQP_tiger3_intelmpi_24_30PE/INPUT
+if ( ! -f coupler.res ) then
+ln -s /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/aerosol.climatology.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/aerosol.optical.dat /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/albedo.data.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/amip1_sst.data.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/annual_mean_ozone /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/asmsw_data.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/atmos_hgrid.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/atmos_mosaic.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/atmos_mosaicXland_mosaic.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/atmos_mosaicXocean_mosaic.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/basin_mask.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/BetaDistributionTable.txt /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cfc.bc.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/ch4_gblannualdata /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/chl.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_0_10701200.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_0_12001400.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_0_43um.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_0_490630.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_0_490850.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_0_560630.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_0_630700.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_0_700850.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_1250_12001400.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_1320_43um.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_1320_490630.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_1320_490850.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_1320_630700.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_1320_700850.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_1600_43um /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_1600_490630 /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_1600_490670 /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_1600_490850 /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_1600_630700 /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_1600_670850 /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_1600_700850 /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_165_43um.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_165_490630.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_165_490850.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_165_630700.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_165_700850.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_1750_12001400.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_180_10701200.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_180_12001400.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_180_560630.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_2250_12001400.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_275_10701200.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_275_12001400.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_275_560630.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_2800_12001400.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_280_10701200.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_280_12001400.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_280_560630.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_300_12001400.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_300_43um.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_300_490630.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_300_490850.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_300_630700.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_300_700850.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_310_10701200.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_310_12001400.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_310_560630.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_330_43um.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_330_490630.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_330_490850.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_330_630700.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_330_700850.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_340_10701200.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_340_12001400.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_340_560630.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_348_43um.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_348_490630.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_348_490850.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_348_630700.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_348_700850.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_356_43um.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_356_490630.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_356_490850.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_356_630700.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_356_700850.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_360_43um.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_360_490630.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_360_490850.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_360_630700.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_360_700850.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_375_10701200.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_375_12001400.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_375_560630.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_4000_12001400.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_500_10701200.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_500_12001400.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_500_560630.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_600_43um.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_600_490630.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_600_490850.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_600_630700.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_600_700850.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_660_43um.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_660_490630.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_660_490850.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_660_630700.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_660_700850.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cns_700_12001400.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/co2_gblannualdata /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/conc_all.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cover_type_field /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/cover_type_field.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/data_table /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/diag_table /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/eftsw4str /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/emissions.ch3i.GEOS4x5.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/esf_sw_input_data_n38b18 /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/esf_sw_input_data_n72b25 /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/extlw_data.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/extsw_data.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/f113_gblannualdata /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/f11_gblannualdata /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/f12_gblannualdata /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/f22_gblannualdata /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/field_table /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/grid_spec.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/ground_type_field /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/groundwater_residence_time_field /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/h2o12001400_hi00_data /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/h2o12001400_hi92_data /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/h2ockd2.1_corrdata /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/h2ockd2.1_data /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/h2ockd2.4_corrdata /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/h2ocoeff_ckd_0_3000_10cm_hi00 /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/h2ocoeff_ckd_speccombwidebds_hi00 /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/h2ocoeff_ckd_speccombwidebds_hi92 /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/h2ocoeff_rsb_0_3000_10cm_hi00 /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/h2ocoeff_rsb_speccombwidebds_hi00 /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/h2ocoeff_rsb_speccombwidebds_hi92 /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/hadisst_sst.clim.1986-2005.forAM2.1.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/hadisst_sst.clim.1986-2005.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/id1ch4n2 /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/id1o3 /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/id2h2obdckd2p1 /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/id2h2obdfull /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/id2h2orbts /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/input.nml /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/land_hgrid.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/land_mosaic.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/land_mosaicXocean_mosaic.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/lean_solar_spectral_data.dat /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/mixdownslope_mask.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/n2o_gblannualdata /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/navy_topography.data.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/o39001200_hi00_data /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/o39001200_hi92_data /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/o3.climatology.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/ocean_hgrid.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/ocean_mosaic.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/ocean_vgrid.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/omgsw_data.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/radfn_5-2995_100-490k /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/randelo3data /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/README_atmos2004 /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/reynolds_sst.data.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/reyoi_sst.data.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/river_destination_field /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/roughness_length.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/seasonal_ozone /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/sst_ice_clim.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/stdlvls /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/swstratendramadata /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/tideamp.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/topog.nc /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/wy_make_input_data_CM2.1.sh /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/wy_make_sst_AM2.1.py /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/zonal_ozone_data.nc .
+ln: failed to create symbolic link './aerosol.climatology.nc': File exists
+ln: failed to create symbolic link './aerosol.optical.dat': File exists
+ln: failed to create symbolic link './albedo.data.nc': File exists
+ln: failed to create symbolic link './amip1_sst.data.nc': File exists
+ln: failed to create symbolic link './annual_mean_ozone': File exists
+ln: failed to create symbolic link './asmsw_data.nc': File exists
+ln: failed to create symbolic link './atmos_hgrid.nc': File exists
+ln: failed to create symbolic link './atmos_mosaic.nc': File exists
+ln: failed to create symbolic link './atmos_mosaicXland_mosaic.nc': File exists
+ln: failed to create symbolic link './atmos_mosaicXocean_mosaic.nc': File exists
+ln: failed to create symbolic link './basin_mask.nc': File exists
+ln: failed to create symbolic link './BetaDistributionTable.txt': File exists
+ln: failed to create symbolic link './cfc.bc.nc': File exists
+ln: failed to create symbolic link './ch4_gblannualdata': File exists
+ln: failed to create symbolic link './chl.nc': File exists
+ln: failed to create symbolic link './cns_0_10701200.nc': File exists
+ln: failed to create symbolic link './cns_0_12001400.nc': File exists
+ln: failed to create symbolic link './cns_0_43um.nc': File exists
+ln: failed to create symbolic link './cns_0_490630.nc': File exists
+ln: failed to create symbolic link './cns_0_490850.nc': File exists
+ln: failed to create symbolic link './cns_0_560630.nc': File exists
+ln: failed to create symbolic link './cns_0_630700.nc': File exists
+ln: failed to create symbolic link './cns_0_700850.nc': File exists
+ln: failed to create symbolic link './cns_1250_12001400.nc': File exists
+ln: failed to create symbolic link './cns_1320_43um.nc': File exists
+ln: failed to create symbolic link './cns_1320_490630.nc': File exists
+ln: failed to create symbolic link './cns_1320_490850.nc': File exists
+ln: failed to create symbolic link './cns_1320_630700.nc': File exists
+ln: failed to create symbolic link './cns_1320_700850.nc': File exists
+ln: failed to create symbolic link './cns_1600_43um': File exists
+ln: failed to create symbolic link './cns_1600_490630': File exists
+ln: failed to create symbolic link './cns_1600_490670': File exists
+ln: failed to create symbolic link './cns_1600_490850': File exists
+ln: failed to create symbolic link './cns_1600_630700': File exists
+ln: failed to create symbolic link './cns_1600_670850': File exists
+ln: failed to create symbolic link './cns_1600_700850': File exists
+ln: failed to create symbolic link './cns_165_43um.nc': File exists
+ln: failed to create symbolic link './cns_165_490630.nc': File exists
+ln: failed to create symbolic link './cns_165_490850.nc': File exists
+ln: failed to create symbolic link './cns_165_630700.nc': File exists
+ln: failed to create symbolic link './cns_165_700850.nc': File exists
+ln: failed to create symbolic link './cns_1750_12001400.nc': File exists
+ln: failed to create symbolic link './cns_180_10701200.nc': File exists
+ln: failed to create symbolic link './cns_180_12001400.nc': File exists
+ln: failed to create symbolic link './cns_180_560630.nc': File exists
+ln: failed to create symbolic link './cns_2250_12001400.nc': File exists
+ln: failed to create symbolic link './cns_275_10701200.nc': File exists
+ln: failed to create symbolic link './cns_275_12001400.nc': File exists
+ln: failed to create symbolic link './cns_275_560630.nc': File exists
+ln: failed to create symbolic link './cns_2800_12001400.nc': File exists
+ln: failed to create symbolic link './cns_280_10701200.nc': File exists
+ln: failed to create symbolic link './cns_280_12001400.nc': File exists
+ln: failed to create symbolic link './cns_280_560630.nc': File exists
+ln: failed to create symbolic link './cns_300_12001400.nc': File exists
+ln: failed to create symbolic link './cns_300_43um.nc': File exists
+ln: failed to create symbolic link './cns_300_490630.nc': File exists
+ln: failed to create symbolic link './cns_300_490850.nc': File exists
+ln: failed to create symbolic link './cns_300_630700.nc': File exists
+ln: failed to create symbolic link './cns_300_700850.nc': File exists
+ln: failed to create symbolic link './cns_310_10701200.nc': File exists
+ln: failed to create symbolic link './cns_310_12001400.nc': File exists
+ln: failed to create symbolic link './cns_310_560630.nc': File exists
+ln: failed to create symbolic link './cns_330_43um.nc': File exists
+ln: failed to create symbolic link './cns_330_490630.nc': File exists
+ln: failed to create symbolic link './cns_330_490850.nc': File exists
+ln: failed to create symbolic link './cns_330_630700.nc': File exists
+ln: failed to create symbolic link './cns_330_700850.nc': File exists
+ln: failed to create symbolic link './cns_340_10701200.nc': File exists
+ln: failed to create symbolic link './cns_340_12001400.nc': File exists
+ln: failed to create symbolic link './cns_340_560630.nc': File exists
+ln: failed to create symbolic link './cns_348_43um.nc': File exists
+ln: failed to create symbolic link './cns_348_490630.nc': File exists
+ln: failed to create symbolic link './cns_348_490850.nc': File exists
+ln: failed to create symbolic link './cns_348_630700.nc': File exists
+ln: failed to create symbolic link './cns_348_700850.nc': File exists
+ln: failed to create symbolic link './cns_356_43um.nc': File exists
+ln: failed to create symbolic link './cns_356_490630.nc': File exists
+ln: failed to create symbolic link './cns_356_490850.nc': File exists
+ln: failed to create symbolic link './cns_356_630700.nc': File exists
+ln: failed to create symbolic link './cns_356_700850.nc': File exists
+ln: failed to create symbolic link './cns_360_43um.nc': File exists
+ln: failed to create symbolic link './cns_360_490630.nc': File exists
+ln: failed to create symbolic link './cns_360_490850.nc': File exists
+ln: failed to create symbolic link './cns_360_630700.nc': File exists
+ln: failed to create symbolic link './cns_360_700850.nc': File exists
+ln: failed to create symbolic link './cns_375_10701200.nc': File exists
+ln: failed to create symbolic link './cns_375_12001400.nc': File exists
+ln: failed to create symbolic link './cns_375_560630.nc': File exists
+ln: failed to create symbolic link './cns_4000_12001400.nc': File exists
+ln: failed to create symbolic link './cns_500_10701200.nc': File exists
+ln: failed to create symbolic link './cns_500_12001400.nc': File exists
+ln: failed to create symbolic link './cns_500_560630.nc': File exists
+ln: failed to create symbolic link './cns_600_43um.nc': File exists
+ln: failed to create symbolic link './cns_600_490630.nc': File exists
+ln: failed to create symbolic link './cns_600_490850.nc': File exists
+ln: failed to create symbolic link './cns_600_630700.nc': File exists
+ln: failed to create symbolic link './cns_600_700850.nc': File exists
+ln: failed to create symbolic link './cns_660_43um.nc': File exists
+ln: failed to create symbolic link './cns_660_490630.nc': File exists
+ln: failed to create symbolic link './cns_660_490850.nc': File exists
+ln: failed to create symbolic link './cns_660_630700.nc': File exists
+ln: failed to create symbolic link './cns_660_700850.nc': File exists
+ln: failed to create symbolic link './cns_700_12001400.nc': File exists
+ln: failed to create symbolic link './co2_gblannualdata': File exists
+ln: failed to create symbolic link './conc_all.nc': File exists
+ln: failed to create symbolic link './cover_type_field': File exists
+ln: failed to create symbolic link './cover_type_field.nc': File exists
+ln: failed to create symbolic link './data_table': File exists
+ln: failed to create symbolic link './diag_table': File exists
+ln: failed to create symbolic link './eftsw4str': File exists
+ln: failed to create symbolic link './emissions.ch3i.GEOS4x5.nc': File exists
+ln: failed to create symbolic link './esf_sw_input_data_n38b18': File exists
+ln: failed to create symbolic link './esf_sw_input_data_n72b25': File exists
+ln: failed to create symbolic link './extlw_data.nc': File exists
+ln: failed to create symbolic link './extsw_data.nc': File exists
+ln: failed to create symbolic link './f113_gblannualdata': File exists
+ln: failed to create symbolic link './f11_gblannualdata': File exists
+ln: failed to create symbolic link './f12_gblannualdata': File exists
+ln: failed to create symbolic link './f22_gblannualdata': File exists
+ln: failed to create symbolic link './field_table': File exists
+ln: failed to create symbolic link './grid_spec.nc': File exists
+ln: failed to create symbolic link './ground_type_field': File exists
+ln: failed to create symbolic link './groundwater_residence_time_field': File exists
+ln: failed to create symbolic link './h2o12001400_hi00_data': File exists
+ln: failed to create symbolic link './h2o12001400_hi92_data': File exists
+ln: failed to create symbolic link './h2ockd2.1_corrdata': File exists
+ln: failed to create symbolic link './h2ockd2.1_data': File exists
+ln: failed to create symbolic link './h2ockd2.4_corrdata': File exists
+ln: failed to create symbolic link './h2ocoeff_ckd_0_3000_10cm_hi00': File exists
+ln: failed to create symbolic link './h2ocoeff_ckd_speccombwidebds_hi00': File exists
+ln: failed to create symbolic link './h2ocoeff_ckd_speccombwidebds_hi92': File exists
+ln: failed to create symbolic link './h2ocoeff_rsb_0_3000_10cm_hi00': File exists
+ln: failed to create symbolic link './h2ocoeff_rsb_speccombwidebds_hi00': File exists
+ln: failed to create symbolic link './h2ocoeff_rsb_speccombwidebds_hi92': File exists
+ln: failed to create symbolic link './hadisst_sst.clim.1986-2005.forAM2.1.nc': File exists
+ln: failed to create symbolic link './hadisst_sst.clim.1986-2005.nc': File exists
+ln: failed to create symbolic link './id1ch4n2': File exists
+ln: failed to create symbolic link './id1o3': File exists
+ln: failed to create symbolic link './id2h2obdckd2p1': File exists
+ln: failed to create symbolic link './id2h2obdfull': File exists
+ln: failed to create symbolic link './id2h2orbts': File exists
+ln: failed to create symbolic link './input.nml': File exists
+ln: failed to create symbolic link './land_hgrid.nc': File exists
+ln: failed to create symbolic link './land_mosaic.nc': File exists
+ln: failed to create symbolic link './land_mosaicXocean_mosaic.nc': File exists
+ln: failed to create symbolic link './lean_solar_spectral_data.dat': File exists
+ln: failed to create symbolic link './mixdownslope_mask.nc': File exists
+ln: failed to create symbolic link './n2o_gblannualdata': File exists
+ln: failed to create symbolic link './navy_topography.data.nc': File exists
+ln: failed to create symbolic link './o39001200_hi00_data': File exists
+ln: failed to create symbolic link './o39001200_hi92_data': File exists
+ln: failed to create symbolic link './o3.climatology.nc': File exists
+ln: failed to create symbolic link './ocean_hgrid.nc': File exists
+ln: failed to create symbolic link './ocean_mosaic.nc': File exists
+ln: failed to create symbolic link './ocean_vgrid.nc': File exists
+ln: failed to create symbolic link './omgsw_data.nc': File exists
+ln: failed to create symbolic link './radfn_5-2995_100-490k': File exists
+ln: failed to create symbolic link './randelo3data': File exists
+ln: failed to create symbolic link './README_atmos2004': File exists
+ln: failed to create symbolic link './reynolds_sst.data.nc': File exists
+ln: failed to create symbolic link './reyoi_sst.data.nc': File exists
+ln: failed to create symbolic link './river_destination_field': File exists
+ln: failed to create symbolic link './roughness_length.nc': File exists
+ln: failed to create symbolic link './seasonal_ozone': File exists
+ln: failed to create symbolic link './sst_ice_clim.nc': File exists
+ln: failed to create symbolic link './stdlvls': File exists
+ln: failed to create symbolic link './swstratendramadata': File exists
+ln: failed to create symbolic link './tideamp.nc': File exists
+ln: failed to create symbolic link './topog.nc': File exists
+ln: failed to create symbolic link './wy_make_input_data_CM2.1.sh': File exists
+ln: failed to create symbolic link './wy_make_sst_AM2.1.py': File exists
+ln: failed to create symbolic link './zonal_ozone_data.nc': File exists
+ln -s /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/init_cond_AQP/01210101_nocal/archive .
+ln: failed to create symbolic link './archive': File exists
+rm hadisst_sst.data.nc
+ln -s /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/model_input/input_data_AQP/hadisst_sst.clim.1986-2005.forAM2.1.nc hadisst_sst.data.nc
+endif
+cd /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/work/CTL1990_AQP_tiger3_intelmpi_24_30PE
+if ( -f ASCII/time_stamp.out ) then
+set date_name = 00010101
+endif
+set irun = 1
+while ( 1 < = 1 )
+if ( 00010101 > = 01010201 ) then
+srun -n 30 ./fms_CM2.1p1_dynamic.x
+NOTE from PE    0: MPP_DOMAINS_SET_STACK_SIZE: stack size set to    32768.
+ &MPP_IO_NML
+ HEADER_BUFFER_VAL       =       16384,
+ GLOBAL_FIELD_ON_ROOT_PE = T,
+ IO_CLOCKS_ON    = F
+ /
+NOTE from PE    0: MPP_IO_SET_STACK_SIZE: stack size set to     131072.
+NOTE from PE    0: MPP_DOMAINS_SET_STACK_SIZE: stack size set to   130296.
+                                         Memuse(MB) at fms_init=  1.326E+02  1.426E+02  2.103E+00  1.367E+02
+NOTE from PE    0: coupler_init: Atmos PE range:      0    29 ens_01
+NOTE from PE    0: coupler_init: Ocean PE range:      0    29 ens_01
+NOTE from PE    0: coupler_init: Running with SERIAL coupling.
+NOTE from PE    0: coupler_init: Sending LAG fluxes to ocean.
+                                Memuse(MB) at diag_manager_init=  1.344E+02  1.452E+02  2.242E+00  1.389E+02
+
+WARNING from PE    0: MPP_OPEN: File time_stamp.out opened WRONLY already exists!
+
+
+WARNING from PE    0: MPP_OPEN: File time_stamp.out opened WRONLY already exists!
+
+ 
+ Dumping coupler_mod/types tree
+types/
+      air_sea_gas_flux_generic/
+                               implementation/
+                                              ocmip2/
+                                                     num_parameters = 2
+                               num_flags = 0
+                               use_atm_pressure = T
+                               use_10m_wind_speed = T
+                               pass_through_ice = F
+                               atm/
+                                   name[1] = 'pcair'
+                                   name[2] = 'u10'
+                                   name[3] = 'psurf'
+                                   long_name[1] = 'Atmospheric concentration'
+                                   long_name[2] = 'Wind speed at 10 m'
+                                   long_name[3] = 'Surface atmospheric pressure'
+                                   units[1] = 'mol/mol'
+                                   units[2] = 'm/s'
+                                   units[3] = 'Pa'
+                               ice/
+                                   name[1] = 'alpha'
+                                   name[2] = 'csurf'
+                                   name[3] = 'sc_no'
+                                   long_name[1] = 'Solubility w.r.t. atmosphere'
+                                   long_name[2] = 'Ocean concentration'
+                                   long_name[3] = 'Schmidt number'
+                                   units[1] = 'mol/m^3/atm'
+                                   units[2] = 'mol/m^3'
+                                   units[3] = 'dimensionless'
+                               flux/
+                                    name[1] = 'flux'
+                                    name[2] = 'deltap'
+                                    name[3] = 'kw'
+                                    long_name[1] = 'Surface flux'
+                                    long_name[2] = 'Ocean-air delta pressure'
+                                    long_name[3] = 'Piston velocity'
+                                    units[1] = 'mol/m^2/s'
+                                    units[2] = 'uatm'
+                                    units[3] = 'm/s'
+      air_sea_gas_flux/
+                       implementation/
+                                      ocmip2/
+                                             num_parameters = 2
+                                      ocmip2_data/
+                                                  num_parameters = 2
+                                      linear/
+                                             num_parameters = 3
+                       num_flags = 0
+                       use_atm_pressure = T
+                       use_10m_wind_speed = T
+                       pass_through_ice = F
+                       atm/
+                           name[1] = 'pcair'
+                           name[2] = 'u10'
+                           name[3] = 'psurf'
+                           long_name[1] = 'Atmospheric concentration'
+                           long_name[2] = 'Wind speed at 10 m'
+                           long_name[3] = 'Surface atmospheric pressure'
+                           units[1] = 'mol/mol'
+                           units[2] = 'm/s'
+                           units[3] = 'Pa'
+                       ice/
+                           name[1] = 'alpha'
+                           name[2] = 'csurf'
+                           long_name[1] = 'Solubility from atmosphere times Schmidt number term'
+                           long_name[2] = 'Ocean concentration times Schmidt number term'
+                           units[1] = 'mol/m^3/atm'
+                           units[2] = 'mol/m^3'
+                       flux/
+                            name = 'flux'
+                            long_name = 'Surface flux'
+                            units = 'mol/m^2/s'
+      air_sea_deposition/
+                         implementation/
+                                        dry/
+                                            num_parameters = 1
+                                        wet/
+                                            num_parameters = 1
+                         num_flags = 0
+                         use_atm_pressure = F
+                         use_10m_wind_speed = F
+                         pass_through_ice = T
+                         atm/
+                             name = 'deposition'
+                             long_name = 'Atmospheric deposition'
+                             units = 'kg/m^2/s'
+                         ice/
+                             name = NULL
+                             long_name = NULL
+                             units = NULL
+                         flux/
+                              name = 'flux'
+                              long_name = 'Surface deposition'
+                              units = 'mol/m^2/s'
+      land_sea_runoff/
+                      implementation/
+                                     river/
+                                           num_parameters = 1
+                      num_flags = 0
+                      use_atm_pressure = F
+                      use_10m_wind_speed = F
+                      pass_through_ice = T
+                      atm/
+                          name = 'runoff'
+                          long_name = 'Concentration in land runoff'
+                          units = 'mol/m^3'
+                      ice/
+                          name = NULL
+                          long_name = NULL
+                          units = NULL
+                      flux/
+                           name = 'flux'
+                           long_name = 'Concentration in land runoff'
+                           units = 'mol/m^3'
+ ncnst=           4  num_prog=           4  pnats=           0  num_family=
+           0
+ FV Core Arrays. domain decomposition
+whalo =    0, ehalo =    0, shalo =    3, nhalo =    3
+  X-AXIS =  144
+  Y-AXIS =    3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+              3   3   3   3   3   3
+MPP_PSET_CREATE creating PSETs... npset=     1
+MPP_PSET_CREATE: setting stacksize= 1000000
+ MPI-1 is used within mod_comm
+ Two-level Parallelism: Domains x Threads=          30           1
+ SMP pseudo domain decomposition in E-W =           1
+ Cold_start= T
+ Using n_split from the namelist:            5
+ Total number of sponge layers=            1
+ Mean cell width (km)=   221.574005894595     
+ Initializing polar filter .........
+ Starting latitude for algebraic pft=   36.0027517282874     
+Tracer sphum initialized with surface value of 0.300000E-05 and vertical multiplier of   1.000000
+ No surface dataset found; setting phis = 0
+ mean terrain height (m)=  0.000000000000000E+000
+ Computed T  max =    215.000000000000       min =    215.000000000000     
+ Total surface pressure (mb) =   1000.000000000000     
+ mean dry surface pressure =    999.997003000002     
+ TPW-vapor (kg/m**2) =  3.058163262963086E-002
+ TPW-total (kg/m**2) =  3.058163265306130E-002
+ dry mass to be added (pascals) =  0.299699999799486     
+ Total (moist) surface pressure after adjustment =    1000.00299700000     
+ Check_eta: allowable min_ps (mb)=   385.413553452405     
+NOTE from PE    0: topography_mod: Reading NetCDF formatted input data file: INPUT/navy_topography.data.nc
+NOTE from PE    0: MPP_IO_SET_STACK_SIZE: stack size set to    2332800.
+NOTE from PE    0: aerosol_mod: inconsistent nml settings -- not using aerosol  timeseries but requesting interannual variation of   aerosol amount for so4 -- this aerosol will NOT exhibit interannual variation
+NOTE from PE    0: aerosol_mod: inconsistent nml settings -- not using aerosol  timeseries but requesting interannual variation of   aerosol amount for black_carbon -- this aerosol will NOT exhibit interannual variation
+NOTE from PE    0: aerosol_mod: inconsistent nml settings -- not using aerosol  timeseries but requesting interannual variation of   aerosol amount for organic_carbon -- this aerosol will NOT exhibit interannual variation
+NOTE from PE    0: aerosol_mod: inconsistent nml settings -- not using aerosol  timeseries but requesting interannual variation of   aerosol amount for dust_0.1 -- this aerosol will NOT exhibit interannual variation
+NOTE from PE    0: aerosol_mod: inconsistent nml settings -- not using aerosol  timeseries but requesting interannual variation of   aerosol amount for dust_0.2 -- this aerosol will NOT exhibit interannual variation
+NOTE from PE    0: aerosol_mod: inconsistent nml settings -- not using aerosol  timeseries but requesting interannual variation of   aerosol amount for dust_0.4 -- this aerosol will NOT exhibit interannual variation
+NOTE from PE    0: aerosol_mod: inconsistent nml settings -- not using aerosol  timeseries but requesting interannual variation of   aerosol amount for dust_0.8 -- this aerosol will NOT exhibit interannual variation
+NOTE from PE    0: aerosol_mod: inconsistent nml settings -- not using aerosol  timeseries but requesting interannual variation of   aerosol amount for sea_salt -- this aerosol will NOT exhibit interannual variation
+NOTE from PE    0: aerosol_mod: inconsistent nml settings -- not using aerosol  timeseries but requesting interannual variation of   aerosol amount for dust_1.0 -- this aerosol will NOT exhibit interannual variation
+NOTE from PE    0: aerosol_mod: inconsistent nml settings -- not using aerosol  timeseries but requesting interannual variation of   aerosol amount for dust_2.0 -- this aerosol will NOT exhibit interannual variation
+NOTE from PE    0: aerosol_mod: inconsistent nml settings -- not using aerosol  timeseries but requesting interannual variation of   aerosol amount for dust_4.0 -- this aerosol will NOT exhibit interannual variation
+NOTE from PE    0: aerosol_mod: inconsistent nml settings -- not using aerosol  timeseries but requesting interannual variation of   aerosol amount for dust_8.0 -- this aerosol will NOT exhibit interannual variation
+NOTE from PE    0: aerosol_mod: Aerosol data is defined from a single annual cycle for so4 - no interannual variation
+ Aerosol data for so4 obtained from aerosol timeseries for year:        1990
+NOTE from PE    0: aerosol_mod: Aerosol data is defined from a single annual cycle for black_carbon - no interannual variation
+ Aerosol data for black_carbon obtained from aerosol timeseries for year:
+        1990
+NOTE from PE    0: aerosol_mod: Aerosol data is defined from a single annual cycle for organic_carbon - no interannual variation
+ Aerosol data for organic_carbon obtained from aerosol timeseries for year:
+        1990
+NOTE from PE    0: aerosol_mod: Aerosol data is defined from a single annual cycle for dust_0.1 - no interannual variation
+ Aerosol data for dust_0.1 obtained from aerosol timeseries for year:
+        1990
+NOTE from PE    0: aerosol_mod: Aerosol data is defined from a single annual cycle for dust_0.2 - no interannual variation
+ Aerosol data for dust_0.2 obtained from aerosol timeseries for year:
+        1990
+NOTE from PE    0: aerosol_mod: Aerosol data is defined from a single annual cycle for dust_0.4 - no interannual variation
+ Aerosol data for dust_0.4 obtained from aerosol timeseries for year:
+        1990
+NOTE from PE    0: aerosol_mod: Aerosol data is defined from a single annual cycle for dust_0.8 - no interannual variation
+ Aerosol data for dust_0.8 obtained from aerosol timeseries for year:
+        1990
+NOTE from PE    0: aerosol_mod: Aerosol data is defined from a single annual cycle for sea_salt - no interannual variation
+ Aerosol data for sea_salt obtained from aerosol timeseries for year:
+        1990
+NOTE from PE    0: aerosol_mod: Aerosol data is defined from a single annual cycle for dust_1.0 - no interannual variation
+ Aerosol data for dust_1.0 obtained from aerosol timeseries for year:
+        1990
+NOTE from PE    0: aerosol_mod: Aerosol data is defined from a single annual cycle for dust_2.0 - no interannual variation
+ Aerosol data for dust_2.0 obtained from aerosol timeseries for year:
+        1990
+NOTE from PE    0: aerosol_mod: Aerosol data is defined from a single annual cycle for dust_4.0 - no interannual variation
+ Aerosol data for dust_4.0 obtained from aerosol timeseries for year:
+        1990
+NOTE from PE    0: aerosol_mod: Aerosol data is defined from a single annual cycle for dust_8.0 - no interannual variation
+ Aerosol data for dust_8.0 obtained from aerosol timeseries for year:
+        1990
+NOTE from PE    0: GLOBAL ATT too long - not reading this metadata
+NOTE from PE    0: interpolator_mod: Using noleap model calendar and julian file calendar for file aerosol.climatology.nc; calendar conversion needed
+NOTE from PE    0: interpolator_mod :aerosol.climatology.nc is a timeseries file
+for file aerosol.climatology.nc, the first time slice is mapped to : 1855 Jan 16 00:00:00
+for file aerosol.climatology.nc, the last time slice is mapped to: 2105 Dec 16 00:00:00
+ Initializing src field : so4
+ Initializing src field : black_carbon
+ Initializing src field : organic_carbon
+ Initializing src field : dust_0.1
+ Initializing src field : dust_0.2
+ Initializing src field : dust_0.4
+ Initializing src field : dust_0.8
+ Initializing src field : sea_salt
+ Initializing src field : dust_1.0
+ Initializing src field : dust_2.0
+ Initializing src field : dust_4.0
+ Initializing src field : dust_8.0
+NOTE from PE    0: radiative_gases_mod: PROCESSING TIMESERIES FOR ch4
+Gas value is taken from timeseries at time: 1990 Jan 01 00:00:00
+ ch4 value is   1.688550000000000E-006
+NOTE from PE    0: radiative_gases_mod: PROCESSING TIMESERIES FOR n2o
+Gas value is taken from timeseries at time: 1990 Jan 01 00:00:00
+ n2o value is   3.089962500000000E-007
+NOTE from PE    0: radiative_gases_mod: PROCESSING TIMESERIES FOR f11
+Gas value is taken from timeseries at time: 1990 Jan 01 00:00:00
+ f11 value is   2.488250000000000E-010
+NOTE from PE    0: radiative_gases_mod: PROCESSING TIMESERIES FOR f12
+Gas value is taken from timeseries at time: 1990 Jan 01 00:00:00
+ f12 value is   4.572000000000000E-010
+NOTE from PE    0: radiative_gases_mod: PROCESSING TIMESERIES FOR f113
+Gas value is taken from timeseries at time: 1990 Jan 01 00:00:00
+ f113 value is   6.120250000000000E-011
+NOTE from PE    0: radiative_gases_mod: PROCESSING TIMESERIES FOR f22
+Gas value is taken from timeseries at time: 1990 Jan 01 00:00:00
+ f22 value is   8.125749999999999E-011
+NOTE from PE    0: radiative_gases_mod: PROCESSING TIMESERIES FOR co2
+Gas value is taken from timeseries at time: 1990 Jan 01 00:00:00
+ co2 value is   3.531712500000000E-004
+NOTE from PE    0: ozone_mod: Ozone data is defined from a single annual cycle - no interannual variation
+ Ozone data obtained from ozone timeseries for year:        1990
+NOTE from PE    0: interpolator_mod: Model and file calendars are the same for file o3.climatology.nc; no calendar conversion  needed
+NOTE from PE    0: interpolator_mod :o3.climatology.nc is a timeseries file
+ Initializing src field : ozone
+NOTE from PE    0: radiation_driver_mod: Solar data is fixed in time
+Data used in this experiment is from solar timeseries at time: 1990 Jan 01 00:00:00
+NOTE from PE    0: radiation_driver_mod: radiation to be calculated on first step: user asserts that this is a scheduled radiation step;  if it is not, restart seamlessness will be lost
+NOTE from PE    0: atmos_tracer_utilities_init:  Dry dep units set to none kg/(m2 s) in atmos_tracer_utilities for cld_amt
+NOTE from PE    0: physics_driver_mod: Reading native formatted restart file.
+NOTE from PE    0: physics_driver_mod: setting radturbten to zero, no strat_cloud.res file present, data not in physics_driver.res
+NOTE from PE    0: physics_driver_mod: setting lw_tendency to zero, no entrain.res file present, data not in physics_driver.res
+                                 Memuse(MB) at atmos_model_init=  2.273E+02  2.398E+02  2.958E+00  2.312E+02
+ LAND MODEL domain decomposition
+whalo =    0, ehalo =    0, shalo =    0, nhalo =    0
+  X-AXIS =   24  24  24  24  24  24
+  Y-AXIS =   18  18  18  18  18
+NOTE from PE    0: land_properties_init: Using static ASCII cover type dataset
+NOTE from PE    0: topography_mod: Reading NetCDF formatted input data file: INPUT/navy_topography.data.nc
+NOTE from PE    0: climap_albedo_mod: Reading NetCDF formatted input data file: INPUT/albedo.data.nc
+                                  Memuse(MB) at land_model_init=  2.398E+02  2.504E+02  2.676E+00  2.429E+02
+ ==>Note from ice_grid_mod(set_ice_grid): read grid from mosaic version grid
+NOTE from PE    0: ==>Note from ice_grid_mod: x_boundary_type is cyclic
+NOTE from PE    0: ==>Note from ice_grid_mod: y_boundary_type is fold_north_edge
+ ice model domain decomposition
+whalo =    1, ehalo =    1, shalo =    1, nhalo =    1
+  X-AXIS =   60  60  60  60  60  60
+  Y-AXIS =   40  40  40  40  40
+ ice_nohalo domain decomposition
+whalo =    0, ehalo =    0, shalo =    0, nhalo =    0
+  X-AXIS =   60  60  60  60  60  60
+  Y-AXIS =   40  40  40  40  40
+                                   Memuse(MB) at ice_model_init=  2.466E+02  2.591E+02  2.635E+00  2.513E+02
+
+                                                      ======== STARTING MOM4 INITIALIZATION ========
+
+  
+ ==>NOTE: Using dynamically allocated array option in mom4
+
+
+ &OCEAN_MODEL_NML
+ TIME_TENDENCY   = twolevel                        ,
+ IMPOSE_INIT_FROM_RESTART        = F,
+ REINITIALIZE_THICKNESS  = F,
+ BAROCLINIC_SPLIT        =           1,
+ BAROTROPIC_SPLIT        =          80,
+ SURFACE_HEIGHT_SPLIT    =           1,
+ LAYOUT  =           6,           5,
+ IO_LAYOUT       =           1,           5,
+ DEBUG   = F,
+ VERTICAL_COORDINATE     = geopotential                    ,
+ DT_OCEAN        =        7200,
+ CMIP_UNITS      = F
+ /
+
+ ==>Note: Running mom4 using    30 computer processors.
+
+  
+ ==>Note: Running mom4 with staggered twotime level scheme to compute time tende
+ ncies.
+          This is the default. Mass/volume and tracer are conserved with this sc
+ heme.
+  
+
+ ==>Note: Time%Time_init = time stamp at very start of the mom4 experiment is given by
+yyyy/mm/dd hh:mm:ss =  101/ 1/ 1  0: 0: 0
+
+ ==>Note: Time%model_time = time stamp at start of this leg of the mom4 experiment is
+yyyy/mm/dd hh:mm:ss =  101/ 1/ 1  0: 0: 0
+
+ ==>Note: Time%init=.true. =>mom4 will start from user specified initial conditions.
+
+ ==> Note: time steps (seconds) used for mom4
+  dtts  (tracer)                            =    7200.00
+  dtuv  (baroclinic)                        =    7200.00
+  dteta (surface height or bottom pressure) =    7200.00
+  dtbt  (barotropic)                        =      90.00
+
+ ==> Note: The velocity equations will be split into baroclinic and barotropic pieces.
+
+
+  ==> Note: Using mom4 with geopotential vertical coordinate.
+      Beware of vanishing top model grid cells. 
+
+     The equations are Boussinesq, and so conserve volume rather than mass.
+     Use one of the pressure-like coordinates to get non-Boussinesq effects.
+
+
+
+ &OCEAN_GRIDS_NML
+ DEBUG_THIS_MODULE       = T,
+ VERBOSE_INIT    = T,
+ READ_RHO0_PROFILE       = F,
+ WRITE_GRID      = F
+ /
+ ==>Note from ocean_grids_mod(set_ocean_grid_size): read grid from mosaic versio
+ n grid
+NOTE from PE    0: ==>Note from ocean_grids_mod(set_ocean_grid_size): x_boundary_type is cyclic
+NOTE from PE    0: ==>Note from ocean_grids_mod(set_ocean_grid_size): y_boundary_type is fold_north_edge
+
+ ==> Note: Energy conversion errors are nontrivial when using tripolar=.true.
+       The cause is related to the need to update redundantly computed information
+       across the Arctic bipolar fold in a bit-wise exact manner for terms contributing
+       to the energy conversion analysis.  The extra code and mpp calls have not been
+       implemented.
+
+
+ &OCEAN_DOMAINS_NML
+ HALO    =           1,
+ MAX_TRACERS     =          10,
+ X_CYCLIC_OFFSET =           0,
+ Y_CYCLIC_OFFSET =           0
+ /
+ mom_domain domain decomposition
+whalo =    1, ehalo =    1, shalo =    1, nhalo =    1
+  X-AXIS =   60  60  60  60  60  60
+  Y-AXIS =   40  40  40  40  40
+NOTE from PE    0: MPP_DOMAINS_SET_STACK_SIZE: stack size set to  2604000.
+ ocean_super_grid domain decomposition
+whalo =    2, ehalo =    2, shalo =    2, nhalo =    2
+  X-AXIS =  120 120 120 120 120 120
+  Y-AXIS =   80  80  80  80  80
+NOTE from PE    0: ==>Note from ocean_grids_mod (set_ocean_hgrid_arrays): altering U-grid arrays at j=0
+ xt chksum =   -2969502674009312359
+ xu chksum =   -5520422572217537216
+ yt chksum =   -7428199041962733988
+ yu chksum =     220624224263930770
+ dxt chksum =    6008742978501439058
+ dxu chksum =    6704793128340140034
+ dyt chksum =    6421284596344409428
+ dyu chksum =   -3815652038365062104
+ dat chksum =   -6726021079576170988
+ dau chksum =    2260759128479731856
+ dxtn chksum =    6704789090996370642
+ dytn chksum =    6121785200720744588
+ dxte chksum =    6008977866950982554
+ dyte chksum =   -2520698973880187257
+ dxun chksum =    7343554023749591050
+ dyun chksum =   -8512747663123172952
+ dxue chksum =    6704789090996370642
+ dyue chksum =    6121785200720744588
+ dtn+dts chksum =    6421284596344409428
+ dun+dus chksum =   -3815652038365062104
+ dte+dtw chksum =    6008742978501439058
+ due+duw chksum =    6704793128340140034
+ dte chksum =   -4655780939111895470
+ dtw chksum =   -4655780939111895470
+ due chksum =   -3959795111452529295
+ duw chksum =   -3959799634238870920
+ sin_rot chksum =   -2778111029264245632
+ cos_rot chksum =   -7183235921324845334
+
+
+ &OCEAN_TOPOG_NML
+ FLAT_BOTTOM     = F,
+ FLAT_BOTTOM_KMT =          50,
+ FLAT_BOTTOM_HT  =   5500.00000000000     ,
+ WRITE_TOPOG     = F,
+ MIN_THICKNESS   =   5.00000000000000     ,
+ KMT_RECOMPUTE   = F,
+ KMT_RECOMPUTE_OFFSET    =           0,
+ DEBUG_THIS_MODULE       = T
+ /
+
+ The shallowest wet ocean model grid cell has depth (meters)     40.00000
+ and this occurs at (i,j,k) = ( 59, 16,  4)
+ which has (long,lat,depth) =  ( -221.5000,  -66.5000,    40.00000)
+
+ Beware that shallow regions (e.g., those shallower than 50m) may be subject
+ to numerical problems if strong surface forcing is not mixed vertically.
+ Such problems may occur especially in shallow regions with kmt==2.
+ Current speeds and/or tracer deviations may become large due to the deposition
+ of wind and/or buoyancy over just a small upper ocean region. Such problems
+ can be resolved by adding sufficient vertical mixing in these regions.
+ Such happens in Nature due to tides and breaking surface waves.
+ Topography checksums
+ from ocean_topop_init: ht  chksum =   -8153331644999737601
+ from ocean_topop_init: hu  chksum =   -1850092662806847985
+ from ocean_topop_init: htr chksum =    3476760761827429968
+ from ocean_topop_init: kmu chksum =      1956338
+ from ocean_topop_init: kmt chksum =      2050088
+  
+
+
+ &OCEAN_OBC_NML
+ NOBC    =           0,
+ DIRECTION       =                                         ,
+ NAME    = test_obc                        none                            none                            none                            ,
+ IS      = 4*-999,
+ IE      = 4*-999,
+ JS      = 4*-999,
+ JE      = 4*-999,
+ IERS    = 4*-999,
+ IERE    = 4*-999,
+ JERS    = 4*-999,
+ JERE    = 4*-999,
+ ITRS    = 4*-999,
+ ITRE    = 4*-999,
+ JTRS    = 4*-999,
+ JTRE    = 4*-999,
+ OBC_NOR = NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          ,
+ OBC_TAN = NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          ,
+ OBC_ETA = NOTHIN                                                                                                                          NOTHIN                                                                                                                          NOTHIN                                                                                                                          NOTHIN                                                                                                                          ,
+ OBC_UD  = NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          ,
+ OBC_TRA = NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                    
+       NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                        
+   NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NO
+ GRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD
+                                                                                                                           NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD    
+                                                                                                                       NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD        
+                                                                                                                   NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD            
+                                                                                                               NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                
+                                                                                                           NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                    
+                                                                                                       NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                        
+                                                                                                   NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                            
+                                                                                               NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                
+                                                                                           NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                    
+                                                                                       NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                        
+                                                                                   NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                            
+                                                                               NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                
+                                                                           NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                    
+                                                                       NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                        
+                                                                   NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                            
+                                                               NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                
+                                                           NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                    
+                                                       NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                        
+                                                   NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                            
+                                               NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                
+                                           NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                    
+                                       NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                        
+                                   NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                            
+                               NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                
+                           NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                    
+                       NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                        
+                   NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                            
+               NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          ,
+ OBC_MIX = NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          NOGRAD                                                                                                                          ,
+ REL_COEF_ETA_IN = 4*0.000000000000000E+000  ,
+ REL_COEF_ETA_OUT        = 4*0.000000000000000E+000  ,
+ REL_ETA_PNTS    = 4*1,
+ REL_CLIN_PNTS   = 160*1,
+ CTROP_MAX       = 4*1.50000000000000        ,
+ CTROP_MIN       = 4*0.100000000000000       ,
+ CTROP_INC       = 4*0.000000000000000E+000  ,
+ CTROP_SMOOTH    = 4*0.700000000000000       ,
+ FILENAME_ETA    = obc_eta_t.nc                                                                                                                                                                                                                                                    none                                                                                                                                                                                                                                                            none                                                                                                              
+                                                                                                                                               none                                                                                                                                                                                                                                                            ,
+ FIELDNAME_ETA   = eta_t                           none                            none                            none                            ,
+ FILENAME_UD     = obc_ud.nc                                                                                                                                                                                                                                                       none                                                                                                                                                                                                                                                            none                                                                                                              
+                                                                                                                                               none                                                                                                                                                                                                                                                            ,
+ FIELDNAME_UD    = ud                              none                            none                            none                            ,
+ OBC_CONSIDER_CONVU      = 4*F,
+ OBC_ADJUST_FORCING_BT   = 4*F,
+ OBC_VERT_ADVEL_T        = 4*F,
+ OBC_VERT_ADVEL_U        = 4*F,
+ OBC_ENHANCE_VISC_BACK   = NONE                                                                                                                            NONE                                                                                                                            NONE                                                                                                                            NONE                                                                                                                            ,
+ OBC_ENHANCE_DIFF_BACK   = NONE            NONE            NONE            NONE            ,
+ ENH_PNTS        = 4*1,
+ ENH_FAC_V       = 4*0.900000000000000       ,
+ ENH_FAC_D       = 4*1.00000000000000        ,
+ OBC_RELAX_TRACER        = 160*F,
+ OBC_FLOW_RELAX  = 160*1,
+ OBC_CONSIDER_SOURCES    = 160*F,
+ OBC_TRACER_NO_INFLOW    = 160*F,
+ REL_COEF_TRACER_IN      = 160*0.000000000000000E+000  ,
+ REL_COEF_TRACER_OUT     = 160*0.000000000000000E+000  ,
+ FILENAME_TRACER = INPUT/obc_tr.nc                                                                                                                                                                                                                                                 INPUT/obc_tr.nc                                                                                                                                                                                                                                                 INPUT/obc_tr.nc                                                                                                   
+                                                                                                                                               INPUT/obc_tr.nc                                                                                                                                                                                                                                                 INPUT/obc_tr.nc                                                                                                                                                                                                                                       
+           INPUT/obc_tr.nc                                                                                                                                                                                                                                                 INPUT/obc_tr.nc                                                                                                                                                                                                                                                 INPUT/obc_tr.nc                                                                                                           
+                                                                                                                                       none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                          
+   none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                                                                                                              
+                                                                                                                               none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none  
+                                                                                                                                                                                                                                                           none                                                                                                                                                                                                                                                            none                                                                                                                                      
+                                                                                                                       none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none          
+                                                                                                                                                                                                                                                   none                                                                                                                                                                                                                                                            none                                                                                                                                              
+                                                                                                               none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                  
+                                                                                                                                                                                                                                           none                                                                                                                                                                                                                                                            none                                                                                                                                                      
+                                                                                                       none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                          
+                                                                                                                                                                                                                                   none                                                                                                                                                                                                                                                            none                                                                                                                                                              
+                                                                                               none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                  
+                                                                                                                                                                                                                           none                                                                                                                                                                                                                                                            none                                                                                                                                                                      
+                                                                                       none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                          
+                                                                                                                                                                                                                   none                                                                                                                                                                                                                                                            none                                                                                                                                                                              
+                                                                               none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                                  
+                                                                                                                                                                                                           none                                                                                                                                                                                                                                                            none                                                                                                                                                                                      
+                                                                       none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                                          
+                                                                                                                                                                                                   none                                                                                                                                                                                                                                                            none                                                                                                                                                                                              
+                                                               none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                                                  
+                                                                                                                                                                                           none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                      
+                                                       none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                                                          
+                                                                                                                                                                                   none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                              
+                                               none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                                                                  
+                                                                                                                                                                           none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                      
+                                       none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                                                                          
+                                                                                                                                                                   none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                              
+                               none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                                                                                  
+                                                                                                                                                           none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                      
+                       none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                                                                                          
+                                                                                                                                                   none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                              
+               none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                                                                                                  
+                                                                                                                                           none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                      
+       none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                                                                                                          
+                                                                                                                                   none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            no
+ ne                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                                                                                                                  
+                                                                                                                           none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none      
+                                                                                                                                                                                                                                                       none                                                                                                                                                                                                                                                            none                                                                                                                                          
+                                                                                                                   none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none              
+                                                                                                                                                                                                                                               none                                                                                                                                                                                                                                                            none                                                                                                                                                  
+                                                                                                           none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                      
+                                                                                                                                                                                                                                       none                                                                                                                                                                                                                                                            none                                                                                                                                                          
+                                                                                                   none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                              
+                                                                                                                                                                                                                               none                                                                                                                                                                                                                                                            none                                                                                                                                                                  
+                                                                                           none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                      
+                                                                                                                                                                                                                       none                                                                                                                                                                                                                                                            none                                                                                                                                                                          
+                                                                                   none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                              
+                                                                                                                                                                                                               none                                                                                                                                                                                                                                                            none                                                                                                                                                                                  
+                                                                           none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                                      
+                                                                                                                                                                                                       none                                                                                                                                                                                                                                                            none                                                                                                                                                                                          
+                                                                   none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                                              
+                                                                                                                                                                                               none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                  
+                                                           none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                                                      
+                                                                                                                                                                                       none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                          
+                                                   none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                                                              
+                                                                                                                                                                               none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                  
+                                           none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                                                                      
+                                                                                                                                                                       none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                          
+                                   none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                                                                              
+                                                                                                                                                               none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                  
+                           none                                                                                                                                                                                                                                                            none                                                                                                                                                                                                                                                            none                                                                                                      
+                                                                                                                                                       none                                                                                                                                                                                                                                                            ,
+ FIELDNAME_TRACER        = temp_obc                        temp_obc                        temp_obc                        temp_obc                        salt_obc                        salt_obc                        salt_obc                        salt_obc                        none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none      
+                       none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none          
+                   none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none              
+               none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                  
+           none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                      
+       none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                          
+   none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            no
+ ne                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            none                            ,
+ DEBUG_PHASE_SPEED       = F,
+ DEBUG_THIS_MODULE       = F,
+ OBC_DAMP_NEWTON = 4*F,
+ DAMP_FACTOR     = 4*1.00000000000000        
+ /
+
+  Number of wet ocean tracer points          =     2050088
+  Number of wet ocean velocity points        =     1956338
+  Number of computed ocean tracer points     =     3600000
+
+  Wet ocean volume with eta_t=0.0   (T-cells)  = 1.32536324265417318E+18 m^3 (not bit reproducible)
+  Ocean surface area               (T-cells)  = 3.59027326205200812E+14 m^2 (not bit reproducible)
+
+  Wet ocean volume with eta_u=0.0   (U-cells)  = 1.23840706957569920E+18 m^3 (not bit reproducible)
+  Wet ocean surface area            (U-cells)  = 3.45161542346050000E+14 m^2 (not bit reproducible)
+
+  Wet ocean + masked-out (land) surface area (T-cells) = 5.07591895230172750E+14 m^2 (not bit reproducible)
+  Wet ocean + masked-out (land) surface area (U-cells) = 5.08013684969459250E+14 m^2 (not bit reproducible)
+
+
+
+ &OCEAN_CORIOLIS_NML
+ DEBUG_THIS_MODULE       = F,
+ USE_THIS_MODULE = T,
+ ACOR    =  0.500000000000000     
+ /
+
+  ==> Note: 2*pi timesteps/(min inertial period) implies a maximum dtuv =   6856. sec.
+       ==> Note: Coriolis force is treated semi-implicitly in time with acor=  0.500
+      This approach removes the constraint on dtuv associated with inertial oscillations.
+
+
+ &OCEAN_VELOCITY_NML
+ DEBUG_THIS_MODULE       = F,
+ WRITE_A_RESTART = T,
+ MAX_CGINT       =   2.00000000000000     ,
+ ZERO_TENDENCY   = F,
+ ZERO_TENDENCY_EXPLICIT_A        = F,
+ ZERO_TENDENCY_EXPLICIT_B        = F,
+ ZERO_TENDENCY_IMPLICIT  = F,
+ TRUNCATE_VELOCITY       = F,
+ TRUNCATE_VERBOSE        = T,
+ TRUNCATE_VELOCITY_LAT   =  0.000000000000000E+000,
+ TRUNCATE_VELOCITY_VALUE =   2.00000000000000     ,
+ ADAMS_BASHFORTH_THIRD   = T,
+ ADAMS_BASHFORTH_EPSILON =  0.600000000000000     ,
+ USE_CONSTANT_VELOCITY   = F,
+ CONSTANT_U      =  0.000000000000000E+000,
+ CONSTANT_V      =  0.000000000000000E+000,
+ UPDATE_VELOCITY_VIA_UPRIME      = T
+ /
+
+==>Note from ocean_velocity_mod: use of twolevel time_tendency
+   necessitates an Adams-Bashforth treatment of velocity advection.
+
+   Using 3rd order Adams-Bashforth for velocity advection.
+   This is the mom4 default. 
+
+NOTE from PE    0: ==>update_velocity_via_uprime=.true., so keep udrho from external mode solver.
+
+ Baroclinic time step stability most nearly violated at U-cell (i,j) = (  90, 200), (lon,lat) = (******, 90.00).
+         The number of kmu-levels  at this point is     45
+         The dxu grid distance (m) at this point is 0.246515E+05
+         The dyu grid distance (m) at this point is 0.111202E+06
+         Due to a specified maximum baroclinic gravity wave speed of  2.00 m/s.
+         "dtuv" must be less than 12034. sec. "dtuv" =  7200. sec.
+NOTE from PE    0: ==> From ocean_velocity_mod: Initializing velocity to zero since Time%init=.true. and did not find INPUT/ocean_velocity.res.nc.
+  
+ ===Initial velocity checksums ==>
+yyyy/mm/dd hh:mm:ss =  101/ 1/ 1  0: 0: 0
+ From ocean_velocity_mod: initial velocity chksum (taup1)
+ Zonal velocity chksum      =   -6082379532961051272
+ Meridional velocity chksum =   -6082379532961051272
+ Advection of u chksum =                      0
+ Advection of v chksum =                      0
+
+
+ &OCEAN_BAROTROPIC_NML
+ WRITE_A_RESTART = T,
+ ZERO_TENDENCY   = F,
+ ZERO_ETA_IC     = F,
+ ZERO_ETA_T      = F,
+ ZERO_ETA_U      = F,
+ ZERO_NONLINEAR_FORCING_BT       = F,
+ ZERO_FORCING_BT = F,
+ ZERO_ETA_TENDENCY       = F,
+ TIDAL_FORCING_M2        = F,
+ TIDAL_FORCING_8 = F,
+ TIDAL_FORCING_IDEAL     = F,
+ GEOID_FORCING   = F,
+ BAROTROPIC_PRED_CORR    = T,
+ PRED_CORR_GAMMA =  0.200000000000000     ,
+ BAROTROPIC_LEAP_FROG    = F,
+ ROBERT_ASSELIN_BT       =  5.000000000000000E-002,
+ SMOOTH_ETA_T_BT_LAPLACIAN       = F,
+ SMOOTH_ETA_T_BT_BIHARMONIC      = F,
+ SMOOTH_ETA_T_LAPLACIAN  = F,
+ SMOOTH_ETA_T_BIHARMONIC = T,
+ SMOOTH_ANOMPB_BT_LAPLACIAN      = F,
+ SMOOTH_ANOMPB_BT_BIHARMONIC     = F,
+ SMOOTH_PBOT_T_LAPLACIAN = F,
+ SMOOTH_PBOT_T_BIHARMONIC        = T,
+ SMOOTH_ETA_DIAG_LAPLACIAN       = T,
+ SMOOTH_ETA_DIAG_BIHARMONIC      = F,
+ VEL_MICOM_LAP   =  5.000000000000000E-002,
+ VEL_MICOM_LAP_DIAG      =  0.200000000000000     ,
+ VEL_MICOM_BIH   =  1.000000000000000E-002,
+ VEL_MICOM_BIH_DIAG      =  0.100000000000000     ,
+ TRUNCATE_ETA    = F,
+ VERBOSE_TRUNCATE        = T,
+ ETA_MAX =   8.00000000000000     ,
+ FRAC_CRIT_CELL_HEIGHT   =  0.200000000000000     ,
+ VERBOSE_INIT    = T,
+ DEBUG_THIS_MODULE       = F,
+ DIAG_STEP       =          12,
+ ETA_OFFSET      =  1.000000000000000E-012,
+ PBOT_OFFSET     =  1.000000000000000E-012,
+ BAROTROPIC_TIME_STEPPING_MOM4P0 = T,
+ BAROTROPIC_TIME_STEPPING_MOM4P1 = F,
+ INITSUM_WITH_BAR_MOM4P0 = F,
+ INITSUM_WITH_BAR_MOM4P1 = T,
+ IDEAL_INITIAL_ETA       = F,
+ IDEAL_INITIAL_ETA_AMPLITUDE     =   5.00000000000000     ,
+ IDEAL_INITIAL_ETA_XWIDTH        =   100000.000000000     ,
+ IDEAL_INITIAL_ETA_YWIDTH        =   100000.000000000     ,
+ BAROTROPIC_BMF  = F,
+ BAROTROPIC_BMF_CDBOT    =  1.000000000000000E-003,
+ UDRHO_BT_LAP    = F,
+ UDRHO_BT_BIH    = F,
+ UDRHO_LAP       = F,
+ UDRHO_BIH       = F,
+ UDRHO_LAP_VEL_MICOM     =  5.000000000000000E-002,
+ UDRHO_BIH_VEL_MICOM     =  1.000000000000000E-002
+ /
+
+
+ &OCEAN_DOMAINS_NML
+ HALO    =           1,
+ MAX_TRACERS     =          10,
+ X_CYCLIC_OFFSET =           0,
+ Y_CYCLIC_OFFSET =           0
+ /
+ horz diff flux domain decomposition
+whalo =    1, ehalo =    1, shalo =    1, nhalo =    1
+  X-AXIS =   60  60  60  60  60  60
+  Y-AXIS =   40  40  40  40  40
+NOTE from PE    0: Using barotropic_pred_corr=.true. for integrating barotropic dynamics.
+
+ Predictor-Corrector time filter on barotropic dynamics has value=   0.20
+
+ Updating eta_t or pbot_t using a big time step as in mom4p0. 
+
+ Initialise sum of barotropic sea level with eta_t or pbot_t. This is the default. 
+
+  ==> Note: The barotropic dynamics integrate  160 timesteps for every one baroclinic timestep.
+
+ ==>Using smooth_eta_t_biharmonic to smooth eta_t. Can produce extrema. Not recommended.
+
+ Barotropic stability most nearly violated at U-cell (i,j) = (  89, 200), (lon,lat) = (******, 89.78).
+         The number of kmu-levels at this point is     47
+         The dxu grid spacing (m) at this point is 0.246533E+05
+         The dyu grid spacing (m) at this point is 0.111193E+06
+         where the barotropic gravity wave speed is ~232.0 m/s.
+         "dtbt" must be less than  115.000 sec.   dtbt =   90.000 sec.
+
+
+ &OCEAN_THICKNESS_NML
+ DEBUG_THIS_MODULE       = F,
+ DEBUG_THIS_MODULE_DETAIL        = F,
+ WRITE_A_RESTART = T,
+ FULL_STEP_TOPOGRAPHY    = F,
+ INITIALIZE_ZERO_ETA     = F,
+ ENFORCE_POSITIVE_DZT    = F,
+ DEPTH_MIN_FOR_SIGMA     =  1.000000000000000E-002,
+ THICKNESS_METHOD        = energetic                       ,
+ READ_RHO0_PROFILE       = F,
+ THICKNESS_DZT_MIN       =   2.00000000000000     ,
+ THICKNESS_DZT_MIN_INIT  =   10.0000000000000     ,
+ RESCALE_MASS_TO_GET_HT_MOD      = F,
+ PBOT0_SIMPLE    = F,
+ EPSILON_INIT_THICKNESS  =  1.000000000000000E-005,
+ READ_RESCALE_RHO0_MASK  = F,
+ RESCALE_RHO0_MASK_GFDL  = F,
+ RESCALE_RHO0_BASIN_LABEL        =  -1.00000000000000     ,
+ RESCALE_RHO0_VALUE      =   1.00000000000000     ,
+ LINEAR_FREE_SURFACE     = F,
+ MAX_NUM_BAD_PRINT       =          25,
+ UPDATE_DZWU_K0  = F
+ /
+==>Note: running ocean_thickness with thickness_method=energetic.
+
+
+ &OCEAN_DOMAINS_NML
+ HALO    =           1,
+ MAX_TRACERS     =          10,
+ X_CYCLIC_OFFSET =           0,
+ Y_CYCLIC_OFFSET =           0
+ /
+ horz diff flux domain decomposition
+whalo =    1, ehalo =    1, shalo =    1, nhalo =    1
+  X-AXIS =   60  60  60  60  60  60
+  Y-AXIS =   40  40  40  40  40
+
+
+ &OCEAN_TRACER_NML
+ DEBUG_THIS_MODULE       = F,
+ ZERO_TENDENCY   = F,
+ ZERO_TRACER_SOURCE      = F,
+ WRITE_A_RESTART = T,
+ OCEAN_TPM_DEBUG = F,
+ TMASK_LIMIT_TS_SAME     = T,
+ REMAP_DEPTH_TO_S_INIT   = F,
+ INFLOW_NBOUNDARY        = F,
+ INTERPOLATE_TPROG_TO_PBOTT      = T,
+ INTERPOLATE_TDIAG_TO_PBOTT      = F,
+ LIMIT_AGE_TRACER        = T,
+ AGE_TRACER_MAX_INIT     =  0.000000000000000E+000,
+ FRAZIL_HEATING_BEFORE_VPHYSICS  = T,
+ FRAZIL_HEATING_AFTER_VPHYSICS   = F,
+ COMPUTE_TMASK_LIMIT_ON  = T
+ /
+==>Note: frazil heating called before vertical physics and before boundary fluxes.
+         This method is retained for legacy purposes: it is NOT recommended for new runs. 
+ 
+NOTE from PE    0: ==>Note from ocean_tracer_mod(ocean_prog_tracer_init): Synchronous timesteps have been specified (dtts = dtuv).
+ 
+ ==>Note from ocean_tpm_util_mod(otpm_set_tracer_package)[ocean_tracer_mod(ocean
+ _prog_tracer_init)]: Processing tracer package required
+
+
+ &OCEAN_TEMPSALT_NML
+ DEBUG_THIS_MODULE       = F,
+ TEMPERATURE_VARIABLE    = potential_temp                  ,
+ POTTEMP_2ND_ITERATION   = T,
+ POTTEMP_EQUAL_CONTEMP   = F,
+ T_MIN   =  -5.00000000000000     ,
+ T_MAX   =   55.0000000000000     ,
+ S_MIN   =  -1.00000000000000     ,
+ S_MAX   =   55.0000000000000     ,
+ T_MIN_LIMIT     =  -2.00000000000000     ,
+ T_MAX_LIMIT     =   32.0000000000000     ,
+ S_MIN_LIMIT     =  0.000000000000000E+000,
+ S_MAX_LIMIT     =   42.0000000000000     ,
+ REINIT_TS_WITH_IDEAL    = F,
+ REINIT_TS_WITH_IDEAL_EFOLD      =   1000.00000000000     ,
+ REINIT_TS_WITH_IDEAL_TVALUE     =   10.0000000000000     ,
+ REINIT_TS_WITH_IDEAL_SVALUE     =   30.0000000000000     
+ /
+==>Note from ocean_tempsalt_mod: mom4p1 prognostic temp = potential temperature.
+                                 mom4p1 diagnostic temp = conservative temperature.
+
+ 
+ ==>Note from ocean_tpm_util_mod(otpm_set_prog_tracer)[ocean_tempsalt_mod/ocean_
+ tempsalt_init]: Processing prog tracer temp
+ 
+ ==>Note from ocean_tpm_util_mod(otpm_set_prog_tracer)[ocean_tempsalt_mod/ocean_
+ tempsalt_init]: Processing prog tracer salt
+ 
+ ==>Note from ocean_tpm_util_mod(otpm_set_diag_tracer)[ocean_tempsalt_mod/ocean_
+ tempsalt_init]: Processing diag tracer con_temp
+
+
+ &OCEAN_FRAZIL_NML
+ USE_THIS_MODULE = T,
+ DEBUG_THIS_MODULE       = F,
+ FREEZING_TEMP_SIMPLE    = T,
+ FREEZING_TEMP_ACCURATE  = F,
+ FRAZIL_FACTOR   =   1.00000000000000     ,
+ AIR_SATURATED_WATER     = T,
+ FRAZIL_ONLY_IN_SURFACE  = T
+ /
+NOTE from PE    0: ==>Note from ocean_frazil_mod: USING frazil heating.
+==>Note: Using simple equation for seawater freezing temperature.
+Assuming that frazil forms only in the surface(k=1) ocean grid cell.
+Setting gauge pressure to zero when computing seawater freezing temperature.
+ 
+ ==>Note from ocean_tpm_util_mod(otpm_set_diag_tracer)[ocean_frazil_mod/ocean_fr
+ azil_init]: Processing diag tracer frazil
+
+==>Note from ocean_frazil_mod: using frazil_factor=  1.00
+ 
+ ==>Note from ocean_tpm_util_mod(otpm_set_tracer_package)[ocean_passive_mod(ocea
+ n_passive_init)]: Processing tracer package ocean_passive
+  
+ ==>Note from ocean_passive_mod(ocean_passive_init):
+  No instances of passive tracers in field_table.
+ 
+==>Note: NOT running with idealized passive tracers.
+NOTE from PE    0: ==>Note: ocean_passive_mod: NOT using idealized passive tracer module.
+ 
+ ==>Note from ocean_tpm_util_mod(otpm_set_tracer_package)[ocean_residency_mod(oc
+ ean_residency_init)]: Processing tracer package ocean_residency
+ 
+ ==>Note from ocean_residency_mod(ocean_residency_init): No instances
+ 
+ ==>Note from ocean_tpm_util_mod(otpm_set_tracer_package)[ocean_age_tracer_mod(o
+ cean_age_tracer_init)]: Processing tracer package ocean_age_tracer
+ 
+ ==>Note from ocean_age_tracer_mod(ocean_age_tracer_init):            1 
+  instances
+ 
+ ==>Note from ocean_tpm_util_mod(otpm_set_prog_tracer)[ocean_age_tracer_mod(ocea
+ n_age_tracer_init)]: Processing prog tracer age_global
+ 
+ ==>Note from fm_util_mod(fm_util_start_namelist)[ocean_age_tracer_mod(ocean_age
+ _tracer_init)]: Processing namelist ocean_age_tracer/global
+ 
+ ==>Note from ocean_tpm_util_mod(otpm_set_tracer_package)[ocmip2_cfc_mod(ocmip2_
+ cfc_init)]: Processing tracer package ocmip2_cfc
+ ==>Note from ocmip2_cfc_mod(ocmip2_cfc_init): No instances
+ 
+ ==>Note from ocean_tpm_util_mod(otpm_set_tracer_package)[ocmip2_he_mod(ocmip2_h
+ e_init)]: Processing tracer package ocmip2_he
+ ==>Note from ocmip2_he_mod(ocmip2_he_init): No instances
+ 
+ ==>Note from ocean_tpm_util_mod(otpm_set_tracer_package)[ocean_pert_co2_mod(oce
+ an_pert_co2_init)]: Processing tracer package ocean_pert_co2
+ 
+ ==>Note from ocean_pert_co2_mod(ocean_pert_co2_init): No instances
+ 
+ ==>Note from ocean_tpm_util_mod(otpm_set_tracer_package)[ocmip2_abiotic_mod(ocm
+ ip2_abiotic_init)]: Processing tracer package ocmip2_abiotic
+ 
+ ==>Note from ocmip2_abiotic_mod(ocmip2_abiotic_init): No instances
+ 
+ ==>Note from ocean_tpm_util_mod(otpm_set_tracer_package)[ocmip2_biotic_mod(ocmi
+ p2_biotic_init)]: Processing tracer package ocmip2_biotic
+ 
+ ==>Note from ocmip2_biotic_mod(ocmip2_biotic_init): No instances
+ 
+ ==>Note from ocean_tpm_util_mod(otpm_set_tracer_package)[ocean_bgc_restore_mod(
+ ocean_bgc_restore_init)]: Processing tracer package ocean_bgc_restore
+ 
+ ==>Note from ocean_bgc_restore_mod(ocean_bgc_restore_init): No instances
+ 
+ ==>Note from ocean_tpm_util_mod(otpm_set_tracer_package)[ocean_po4_pre_mod(ocea
+ n_po4_pre_init)]: Processing tracer package ocean_po4_pre
+ 
+ ==>Note from ocean_po4_pre_mod(ocean_po4_pre_init): No instances
+ 
+ ==>Note from ocean_tpm_util_mod(otpm_set_tracer_package)[ocean_ibgc_mod(ocean_i
+ bgc_init)]: Processing tracer package ocean_ibgc
+ 
+ ==>Note from ocean_ibgc_mod(ocean_ibgc_init): No instances
+
+
+ &GENERIC_TRACER_NML
+ DO_GENERIC_TRACER       = T,
+ DO_GENERIC_CFC  = T,
+ DO_GENERIC_TOPAZ        = F,
+ DO_GENERIC_BLING        = F
+ /
+
+
+ &GENERIC_TRACER_NML
+ DO_GENERIC_TRACER       = T,
+ DO_GENERIC_CFC  = T,
+ DO_GENERIC_TOPAZ        = F,
+ DO_GENERIC_BLING        = F
+ /
+ 
+ ==>Note from ocean_tpm_util_mod(otpm_set_tracer_package):
+  Processing tracer package generic_cfc
+ 
+ ==>Note from ocean_tpm_util_mod(otpm_set_prog_tracer): Processing prog tracer 
+ cfc_11
+ 
+ ==>Note from ocean_tpm_util_mod(otpm_set_prog_tracer): Processing prog tracer 
+ cfc_12
+ 
+ ==>Note from ocean_tpm_util_mod(otpm_set_tracer_package)[transport_matrix_mod(t
+ ransport_matrix_init)]: Processing tracer package transport_matrix
+ 
+ ==>Note from transport_matrix_mod(transport_matrix_init): No instances
+ 
+ Dumping tracer_packages tracer tree
+tracer_packages/
+                ocean_age_tracer/
+                                 names = 'global'
+                                 horizontal-advection-scheme = 'mdfl_sweby'
+                                 vertical-advection-scheme = 'mdfl_sweby'
+                                 restart_file = 'ocean_age.res.nc'
+                                 min_tracer_limit = 0.000000000000000E+000
+                                 units = 'yr'
+                                 min_range = 0.000000000000000E+000
+                                 max_range = 1.000000000000000E+020
+                                 flux_units = 'm'
+                                 max_tracer_limit = 1.000000000000000E+020
+                generic_cfc/
+                            names = '_'
+                            horizontal-advection-scheme = 'mdfl_sweby'
+                            vertical-advection-scheme = 'mdfl_sweby'
+                            min_tracer_limit = 0.000000000000000E+000
+                            ppm_hlimiter = 2
+                            ppm_vlimiter = 2
+                            const_init_tracer = T
+                            restart_file = 'ocmip2_cfc.res.nc'
+                required/
+                         names = NULL
+                ocean_passive/
+                              names = NULL
+                              units = 'dimensionless'
+                              conversion = 1.00000000000000
+                              offset = 0.000000000000000E+000
+                              min_tracer = -1000000.00000000
+                              max_tracer = 1000000.00000000
+                              min_range = -10.0000000000000
+                              max_range = 100.000000000000
+                              restart_file = 'ocean_passive.res.nc'
+                              psom_limit = T
+                              flux_units = 'dimensionless'
+                              min_flux_range = -1.000000000000000E+016
+                              max_flux_range = 1.000000000000000E+016
+                              min_tracer_limit = -0.100000000000000
+                              max_tracer_limit = 1.00000000000000
+                              vertical-advection-scheme = 'mdppm'
+                              horizontal-advection-scheme = 'mdppm'
+                ocean_residency/
+                                names = NULL
+                                units = 'yr'
+                                restart_file = 'ocean_residency.res.nc'
+                                flux_units = 'm'
+                                min_tracer_limit = 0.000000000000000E+000
+                                max_tracer_limit = 1.000000000000000E+020
+                ocmip2_cfc/
+                           names = NULL
+                           restart_file = 'ocmip2_cfc.res.nc'
+                ocmip2_he/
+                          names = NULL
+                          restart_file = 'ocmip2_he.res.nc'
+                ocean_pert_co2/
+                               names = NULL
+                               restart_file = 'ocean_pert_co2.res.nc'
+                ocmip2_abiotic/
+                               names = NULL
+                               restart_file = 'ocmip2_abiotic.res.nc'
+                ocmip2_biotic/
+                              names = NULL
+                              restart_file = 'ocmip2_biotic.res.nc'
+                ocean_bgc_restore/
+                                  names = NULL
+                                  restart_file = 'ocean_bgc_restore.res.nc'
+                ocean_po4_pre/
+                              names = NULL
+                              restart_file = 'ocean_po4_pre.res.nc'
+                ocean_ibgc/
+                           names = NULL
+                           restart_file = 'ocean_ibgc.res.nc'
+                transport_matrix/
+                                 names = NULL
+                                 restart_file = 'transport_matrix.res.nc'
+ 
+ Dumping prog_tracers tracer tree
+prog_tracers/
+             temp/
+                  horizontal-advection-scheme = 'mdfl_sweby'
+                  vertical-advection-scheme = 'mdfl_sweby'
+                  restart_file = 'ocean_temp_salt.res.nc'
+                  longname = 'Potential temperature'
+                  units = 'deg_C'
+                  type = ''
+                  conversion = 3992.10322329649
+                  offset = 273.150000000000
+                  min_tracer = -5.00000000000000
+                  max_tracer = 55.0000000000000
+                  min_range = -10.0000000000000
+                  max_range = 100.000000000000
+                  use_only_advection = F
+                  const_init_tracer = F
+                  const_init_value = 0.000000000000000E+000
+                  psom_limit = F
+                  ppm_hlimiter = 2
+                  ppm_vlimiter = 2
+                  flux_units = 'Watts/m^2'
+                  min_flux_range = -1.000000000000000E+016
+                  max_flux_range = 1.000000000000000E+016
+                  min_tracer_limit = -2.00000000000000
+                  max_tracer_limit = 32.0000000000000
+             salt/
+                  horizontal-advection-scheme = 'mdfl_sweby'
+                  vertical-advection-scheme = 'mdfl_sweby'
+                  restart_file = 'ocean_temp_salt.res.nc'
+                  longname = 'Salinity'
+                  units = 'psu'
+                  type = ''
+                  conversion = 1.000000000000000E-003
+                  offset = 0.000000000000000E+000
+                  min_tracer = -1.00000000000000
+                  max_tracer = 55.0000000000000
+                  min_range = -10.0000000000000
+                  max_range = 100.000000000000
+                  use_only_advection = F
+                  const_init_tracer = F
+                  const_init_value = 0.000000000000000E+000
+                  psom_limit = F
+                  ppm_hlimiter = 2
+                  ppm_vlimiter = 2
+                  flux_units = 'kg/(sec*m^2)'
+                  min_flux_range = -100000.000000000
+                  max_flux_range = 100000.000000000
+                  min_tracer_limit = 0.000000000000000E+000
+                  max_tracer_limit = 42.0000000000000
+             age_global/
+                        longname = 'Age (global)'
+                        units = 'yr'
+                        type = ''
+                        conversion = 1.00000000000000
+                        offset = 0.000000000000000E+000
+                        min_tracer = -1.000000000000000E+020
+                        max_tracer = 1.000000000000000E+020
+                        min_range = 0.000000000000000E+000
+                        max_range = 1.000000000000000E+020
+                        use_only_advection = F
+                        restart_file = 'ocean_age.res.nc'
+                        const_init_tracer = F
+                        const_init_value = 0.000000000000000E+000
+                        psom_limit = F
+                        ppm_hlimiter = 2
+                        ppm_vlimiter = 2
+                        flux_units = 'm'
+                        min_flux_range = 1.00000000000000
+                        max_flux_range = 0.000000000000000E+000
+                        min_tracer_limit = 0.000000000000000E+000
+                        max_tracer_limit = 1.000000000000000E+020
+                        vertical-advection-scheme = 'mdfl_sweby'
+                        horizontal-advection-scheme = 'mdfl_sweby'
+             cfc_11/
+                    longname = 'cfc_11 Concentration'
+                    units = 'mol/kg'
+                    type = 'generic'
+                    conversion = 1.00000000000000
+                    offset = 0.000000000000000E+000
+                    min_tracer = -1.000000000000000E+020
+                    max_tracer = 1.000000000000000E+020
+                    min_range = 1.00000000000000
+                    max_range = 0.000000000000000E+000
+                    use_only_advection = F
+                    restart_file = 'ocmip2_cfc.res.nc'
+                    const_init_tracer = T
+                    const_init_value = 0.000000000000000E+000
+                    psom_limit = F
+                    ppm_hlimiter = 2
+                    ppm_vlimiter = 2
+                    flux_units = ''
+                    min_flux_range = 1.00000000000000
+                    max_flux_range = 0.000000000000000E+000
+                    min_tracer_limit = 0.000000000000000E+000
+                    max_tracer_limit = 1.000000000000000E+020
+                    vertical-advection-scheme = 'mdfl_sweby'
+                    horizontal-advection-scheme = 'mdfl_sweby'
+             cfc_12/
+                    longname = 'cfc_12 Concentration'
+                    units = 'mol/kg'
+                    type = 'generic'
+                    conversion = 1.00000000000000
+                    offset = 0.000000000000000E+000
+                    min_tracer = -1.000000000000000E+020
+                    max_tracer = 1.000000000000000E+020
+                    min_range = 1.00000000000000
+                    max_range = 0.000000000000000E+000
+                    use_only_advection = F
+                    restart_file = 'ocmip2_cfc.res.nc'
+                    const_init_tracer = T
+                    const_init_value = 0.000000000000000E+000
+                    psom_limit = F
+                    ppm_hlimiter = 2
+                    ppm_vlimiter = 2
+                    flux_units = ''
+                    min_flux_range = 1.00000000000000
+                    max_flux_range = 0.000000000000000E+000
+                    min_tracer_limit = 0.000000000000000E+000
+                    max_tracer_limit = 1.000000000000000E+020
+                    vertical-advection-scheme = 'mdfl_sweby'
+                    horizontal-advection-scheme = 'mdfl_sweby'
+ 
+ Dumping namelists tracer tree
+namelists/
+          ocean_age_tracer/
+                           global/
+                                  slat = -90.0000000000000
+                                  nlat = 90.0000000000000
+                                  wlon = 0.000000000000000E+000
+                                  elon = 360.000000000000
+                                  coastal_only = F
+                                  t_mask[1] = T
+                                  t_mask[2] = T
+                                  t_mask[3] = T
+                                  t_mask[4] = T
+                                  t_mask[5] = T
+                                  t_mask[6] = T
+                                  t_mask[7] = T
+                                  t_mask[8] = T
+                                  t_mask[9] = T
+                                  t_mask[10] = T
+                                  t_mask[11] = T
+                                  t_mask[12] = T
+                                  age_tracer_type = 'not used'
+          generic_cfc/
+
+
+FATAL from PE    4: temp is not initialized as an ideal passive tracer,  it is not initialized as constant, and it does not exist in the file INPUT/ocean_temp_salt.res.ncAll tracers must have initialization specified.  There is no default.
+
+Abort(1) on node 4 (rank 4 in comm 0): application called MPI_Abort(MPI_COMM_WORLD, 1) - process 4
+FATAL from PE    2: temp is not initialized as an ideal passive tracer,  it is not initialized as constant, and it does not exist in the file INPUT/ocean_temp_salt.res.ncAll tracers must have initialization specified.  There is no default.
+
+Abort(1) on node 2 (rank 2 in comm 0): application called MPI_Abort(MPI_COMM_WORLD, 1) - process 2
+
+FATAL from PE    1: temp is not initialized as an ideal passive tracer,  it is not initialized as constant, and it does not exist in the file INPUT/ocean_temp_salt.res.ncAll tracers must have initialization specified.  There is no default.
+
+Abort(1) on node 1 (rank 1 in comm 0): application called MPI_Abort(MPI_COMM_WORLD, 1) - process 1
+
+FATAL from PE   24: temp is not initialized as an ideal passive tracer,  it is not initialized as constant, and it does not exist in the file INPUT/ocean_temp_salt.res.ncAll tracers must have initialization specified.  There is no default.
+
+Abort(1) on node 24 (rank 24 in comm 0): application called MPI_Abort(MPI_COMM_WORLD, 1) - process 24
+
+FATAL from PE   26: temp is not initialized as an ideal passive tracer,  it is not initialized as constant, and it does not exist in the file INPUT/ocean_temp_salt.res.ncAll tracers must have initialization specified.  There is no default.
+
+
+Abort(1) on node 26 (rank 26 in comm 0): application called MPI_Abort(MPI_COMM_WORLD, 1) - process 26
+FATAL from PE   11: temp is not initialized as an ideal passive tracer,  it is not initialized as constant, and it does not exist in the file INPUT/ocean_temp_salt.res.ncAll tracers must have initialization specified.  There is no default.
+
+Abort(1) on node 11 (rank 11 in comm 0): application called MPI_Abort(MPI_COMM_WORLD, 1) - process 11
+
+FATAL from PE    9: temp is not initialized as an ideal passive tracer,  it is not initialized as constant, and it does not exist in the file INPUT/ocean_temp_salt.res.ncAll tracers must have initialization specified.  There is no default.
+
+slurmstepd: error: *** STEP 822904.0 ON tiger-g03c1n8 CANCELLED AT 2025-03-28T11:44:01 ***
+Abort(1) on node 9 (rank 9 in comm 0): application called MPI_Abort(MPI_COMM_WORLD, 1) - process 9
+
+
+
+FATAL from PE    5: temp is not initialized as an ideal passive tracer,  it is not initialized as constant, and it does not exist in the file INPUT/ocean_temp_salt.res.ncAll tracers must have initialization specified.  There is no default.
+
+Abort(1) on node 5 (rank 5 in comm 0): application called MPI_Abort(MPI_COMM_WORLD, 1) - process 5
+  ==> Note from ocean_tracer_mod: prognostic temperature = potential temperature.
+                                  diagnostic temperature = conservative temperature.
+
+FATAL from PE    8: temp is not initialized as an ideal passive tracer,  it is not initialized as constant, and it does not exist in the file INPUT/ocean_temp_salt.res.ncAll tracers must have initialization specified.  There is no default.
+
+Abort(1) on node 8 (rank 8 in comm 0): application called MPI_Abort(MPI_COMM_WORLD, 1) - process 8
+
+
+FATAL from PE   25: temp is not initialized as an ideal passive tracer,  it is not initialized as constant, and it does not exist in the file INPUT/ocean_temp_salt.res.ncAll tracers must have initialization specified.  There is no default.
+
+Abort(1) on node 25 (rank 25 in comm 0): application called MPI_Abort(MPI_COMM_WORLD, 1) - process 25
+FATAL from PE    7: temp is not initialized as an ideal passive tracer,  it is not initialized as constant, and it does not exist in the file INPUT/ocean_temp_salt.res.ncAll tracers must have initialization specified.  There is no default.
+
+Abort(1) on node 7 (rank 7 in comm 0): application called MPI_Abort(MPI_COMM_WORLD, 1) - process 7
+srun: Job step aborted: Waiting up to 47 seconds for job step to finish.
+srun: error: tiger-g03c1n8: tasks 0,3,5: Killed
+srun: Terminating StepId=822904.0
+srun: error: tiger-g03c1n8: tasks 1-2,4: Exited with exit code 1
+srun: error: tiger-g03c3n3: tasks 6-11: Killed
+srun: error: tiger-g03c6n3: tasks 21-29: Killed
+srun: error: tiger-g03c6n1: tasks 12-20: Killed
+if ( 137 != 0 ) then
+echo Error in execution of /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/work/CTL1990_AQP_tiger3_intelmpi_24_30PE/fms_CM2.1p1_dynamic.x
+Error in execution of /scratch/gpfs/GEOCLIM/gr7610/tiger3/AM2.1/work/CTL1990_AQP_tiger3_intelmpi_24_30PE/fms_CM2.1p1_dynamic.x
+exit 1

@@ -1,0 +1,12 @@
+*.*
+!*.gitignore
+
+! Only keep Fortran and C/C++ files
+!*.f90
+!*.F90
+!*.f77
+!*.F77
+!*.h
+!*.o
+!*.c
+!*.cpp

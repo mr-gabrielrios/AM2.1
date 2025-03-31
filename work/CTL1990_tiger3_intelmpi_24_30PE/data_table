@@ -1,0 +1,8 @@
+"ICE", "sic_obs", "SIC","./INPUT/sst_ice_clim.nc",.false.,0.01
+"ICE", "sit_obs", "SIT","./INPUT/sst_ice_clim.nc",.false.,1.06
+#"ICE", "sst_obs", "SST","./INPUT/sst_ice_clim.nc",.false.,1
+#"ICE", "sic_obs", "ice", "INPUT/hadisst_ice.data.nc", .false., 0.01 #having problem
+#"ICE", "sit_obs", "",    "INPUT/hadisst_ice.data.nc", .true.,     2.0 #also having problem
+"ICE", "sst_obs", "sst", "INPUT/hadisst_sst.data.nc", .false., 1.0
+"ATM",       "cfc_11_flux_pcair_atm", "CFC_11"		, "INPUT/cfc.bc.nc", .false. ,   1.0e-12
+"ATM",       "cfc_12_flux_pcair_atm", "CFC_12"		, "INPUT/cfc.bc.nc", .false. ,   1.0e-12

@@ -1,0 +1,288 @@
+The following files were replaced in the seaesf dataset.
+The replacements were needed to correct data and to extend these datasets to 
+allow models to run to the end of 2003.
+
+Most originated at /home/ds/fms/forcings_input/to_2004
+
+AEROSOLS :
+
+The file
+/archive/lwh/fms/INPUT.IPCC/slow_wetdep_bfix/aerosol.climatology.1859_2010_A1B.nc
+contains aerosol data (kg/m2) for the period 1859-2010. It is constructed as
+given below:
+
+The netCDF time variable is days since 1-1-1800, 0000Z. Data is (always)
+assumed to be on the 15th of the month. The calendar is "julian". The AM/CM
+models contain a module (in interpolator) to set this date for the actual
+mid-month, using a "NOLEAP" calendar, if such is desired. The year 1859 has the
+same data as the year 1860. This year is included for ease of interpolation in
+a model.
+
+Aerosol concentrations are obtained from calculations using the MOZART CTM.
+Calculations are made at 10-year intervals. Historical emissions are based on
+the EDGAR-HYDE emissions inventory. Results for 2000 and 2010 use the A1B
+scenario. These calculations include the "slow" wet deposition value (0.2*HNO3)
+for the aerosol species (sulfate, hydrophilic BC, hydrophilic OC, ammonium,
+nitrate). The calculations also include the black carbon biomass burning bugfix
+for 1860-1880.  (NB: The ozone and aerosol files used in the original CM2.0/2.1
+runs did not include this final bugfix.)
+
+aerosol.climatology.1859_2010_A1B.nc has been renamed aerosol.climatology.nc
+
+aerosol.1860.nc and aerosol.AM2.nc have been removed.
+
+WELL MIXED GREENHOUSE GASES : 
+CH4 DATA :
+All CH4 datasets use values from Etheridge et al (as reported in IPCC WGI TAR
+and also in Pitts and Pitts) through 1992 (see below)
+
+Global mixing ratios calculated over the last 1000 years from Antarctic and
+Greenland measurements. Smoothing spline fit with 75 year cut off (Table 2,
+part 1, Etheridge et al., 1998) Also appears in IPCC WGI TAR Chapter 4 Figure 1
+and Summary for Policymakers Figures 2 and 11, and as Figure 14-17 IN Chemistry
+of the Upper and Lower Atmosphere by Barbara J Finlayson-Pitts and James N.
+Pitts Jr.  Academic Press, 2000.
+
+  ch4_gblannualdata_hist_to2004 uses CMDL data for 1993.5 through 2004.5. The
+CMDL data from ~1986.5 through 1998.5 are actually quite close to the IPCC
+values (they were the primary datasource for the IPCC) but differ significantly
+at 2000.5 and 2001.5 from the scenario values (let alone in later years when
+scenario has a continuing increase of 11.1 ppbv). NOTE: actually the 1993.5 -
+2004.5 data were developed using the new "NOAA04" scaling (see below). the data
+used here employ the scaling factor (dividing by 1.0124) required to return to
+the previous scaling.
+
+  The datasets described above employs the previous scaling of lab CH4
+measurements. Dlugokencky has developed a new "NOAA04" scaling for experimental
+data which has the effect of increasing ALL measured data (from 1000 onward) by
+~1.2 percent (~20 ppbv). 
+
+The following is from Ed Dlugokencky (CMDL):
+ (questions of Dan Schwarzkopf, edited for clarity)
+
+Does this imply that the historical dataset (from year 1000) is also biased by
+~1.2 percent? or is there a year before which the rescaling has no effect?
+
+The 1000-year record of CH4 global averages in the IPCC 3rd assessment report
+was from Etheridge et al. (1998) at CSIRO. At that time, they (CSIRO GASLAB)
+were using the same CH4 standard scale as we were. To convert their CH4 mole
+fractions to our NOAA04 scale, multiply by 1.0124 (1.24%). The error will be
+about 20 ppb at the end of their record and roughly half that at the beginning
+of their 1000-year record.
+
+Is the rescaling an experimental correction or a change in computing global
+averages from the individual stations?
+
+Methane, and most long-lived trace gases, are measured with relative analyical
+techniques. In the case of CH4, it is a gas chromatograph with flame
+ionization detection. The response of the analytical instrument has to be
+calibrated against a standard. We have developed a new standard scale
+(essentially cylinders of natural air with well-known CH4 abundances in them)
+that gives CH4 molar mixing ratios that are a factor of 1.0124 greater than
+the previous scale. So, the short answer is that this was an experimental
+error. The absolute uncertainty in the new scale is +/-0.2% (about 3 ppb).
+
+Ed
+
+ch4_gblannualdata_hist_to2004 has been renamed ch4_gblannualdata
+
+   CO2 DATA
+
+  The co2 data is in co2_gblannualdata_to2004 and
+                     co2_gblannualdata_hist_to2004.
+
+  The data in co2_gblannualdata_to2004 are from the c4mip source:
+http://www.c4mip.cnrs-gif.fr/protocol.html.
+Data after 1960 is a spline fit of global data which is taken to be: 0.25*(S
+Pole) + 0.75*(Mauna Loa).
+The c4mip data ends at 1999 (1999.5).
+Data after 1999.5 are from Mauna Loa and S. Pole only. The global-mean is
+obtained from the above formula. Mauna Loa and S Pole data exists through 2004.
+(12/2004). at http://cdiac.esd.ornl.gov/by_new/bysubjec.html#atmospheric
+(CDIAC) . See Atmospheric Carbon Dioxide and Carbon Isotopes
+
+  In this file the data for 2000.5 and 2001.5 are the scenario (A1B)
+values. this is to permit extension of current historical runs.
+
+ The data in co2_gblannualdata_hist_to2004 are the same as in 
+co2_gblannualdata_to2004 except that the 2000.5 and 2001.5 CDIAC (actual) data
+are used. This implied that runs using this dataset MUST begin no later than
+1999.0.
+
+co2_gblannualdata_hist_to2004 has been renamed co2_gblannualdata
+
+    HALOCARBON DATA
+
+  The files f11(f12,f113,f22)_gblannualdata_to2004 are obtained using the data
+and procedures outlined below.
+
+ The pre-1975 values for f11,f12 and f113 are obtained using a formula obtained
+ by Prinn(2000) (rounded to the nearest pptv). It is assumed that pre-1950
+ values are zero. Also, the f11 value for 1950 is set to zero (formula breaks
+ down).
+
+The 1978 - 1998 values for f11,f12,f113 are taken from IPCC reports and Ozone
+trends reports. the 2000.5 and 2001.5 are from SRES scenario (2001.5 being
+interpolated) this allows extension of existing runs beyond 2000.
+
+The 1986 halocarbon values are from table 8.1, ozone trends panel report
+(1988).
+
+The 2002 - 2004 values for f11, f12 are from Agage. as in the n2o case, as of 7
+aug 2005 these values exist through 9/2004. so the apr-sep average is used,
+with no correction. global-mean values are an average of cape grim and mace
+head.
+
+For f113: Agage provided 2002 values. previously there were 2003 values but
+these were "retracted" due to calibration errors. There are no 2004 values. I
+have decided to take 2003.5 = (2002.5) - 0.6 and 2004.5 = (2002.5) - 1.2 as
+this trend is consistent with measured trends for previous years (and with the
+retracted 2003 value). It is a larger trend than scenario (which is -0.4
+pptv/yr).
+
+  The f22 values before 1978 are Dan Schwarzkopf's extrapolations. After 1978 
+they are from IPCC/Ozone trends reports. The 1992 value is 100 not 105 because
+the 1998 ipcc report gives that value and it seems to fit the timeline better.
+The 2000 value is the is92 scenario value (as with the other halocarbons).
+
+  The f22 values for 2002-2004 are GCMS measuremaents (part of the Agage
+program) - as with f11,f12,f113 the 2004 values exist through 9/2004 and the
+Apr-Sep average is used for that year.
+
+  The files f11(f12,f113,f22)_gblannualdata_hist_to2004 are the same as
+f11(f12,f113,f22)_gblannualdata_to2004 except for the following:
+
+  f11 - Agage data are used for 1995.5 through 2004.5, with the proviso about
+the 2004 data as above. The 1994.5 data point is removed. This means runs with
+the new data MUST start no later than 1992.0 to retain compatibility with the
+old dataset.
+
+  f12 - Agage data are used for 1995.5 through 2004.5, with the proviso about
+the 2004 data as above. This means runs with the new data MUST start no later
+than 1994.0 to retain compatibility with the old dataset.
+
+  f22 - GCMS data (part of Agage) are used for 1999.5 through 2004.5, with the
+proviso about the 2004 data as above. This means runs with the new data MUST
+start no later than 1998.0 to retain compatibility with the old dataset.
+
+  f113 - Agage data are used for 1995.5 through 2004.5, with the proviso about
+the 2003 and 2004 data as in the previous notes for f113. This means runs with
+the new data MUST start no later than 1994.0 to retain compatibility with the
+old dataset.
+
+f113_gblannualdata_hist_to2004 has been renamed f113_gblannualdata
+f11_gblannualdata_hist_to2004 has been renamed f11_gblannualdata
+f12_gblannualdata_hist_to2004 has been renamed f12_gblannualdata
+f22_gblannualdata_hist_to2004 has been renamed f22_gblannualdata
+
+
+N2O DATA :
+
+  The file n2o_gblannualdata_to2004 uses IPCC data through 1998.5 and uses the
+A1B scenario data through 2001.5. This ensures that current runs through 2000
+can use these data to extend runs. Data for 2002.5 and 2003.5 are
+global-annual-mean data from the Agage network. The global mean is the average
+of the Mace Head and Cape Grim values. As of 7 aug 2005, data for 2004 were
+available only through 9/2004. So the 2004.5 value is obtained as an average of
+the April through September values. In earlier years, this appears to
+underestimate the annual average by ~0.1 ppbv, but no correction was applied.
+
+  The file n2o_gblannualdata_hist_to2004 is the same as the file
+n2o_gblannualdata_to2004, but Agage data is used for 2000.5 and 2001.5. This
+file is thus independent of any scenario values.
+
+n2o_gblannualdata_hist_to2004 has been renamed n2o_gblannualdata
+
+SOLAR SPECTRAL DATA : 
+
+ Solar spectral data are supplied by Judith Lean. The data have been massaged
+to conform to the spectral intervals used in the shortwave radiative transfer
+package. It is assumed ( for lack of data) that the 1860-1881 spectral (and
+total) irradiance is constant. The values used in that period are the 1882
+average. These are represented in the dataset by the line (1882    0  ...).
+Data then exists through 2004/12. The final line (2004    0  ...) implies a
+constant spectral and total irradiance for 2005 and subsequent years. The value
+is the average of 2004.
+
+lean_solar_spectral_data_1882-2004.b18 has been renamed lean_solar_spectral_data.dat
+
+VOLCANIC AEROSOL PROPERTIES :
+
+ The files 
+ /archive/ds/fms/volcano_input_netcdf/asmsw_1850_2004.nc
+                                      extlw_1850_2004.nc
+                                      extsw_1850_2004.nc
+                                      omgsw_1850_2004.nc
+contain asymmetry factor, lw ext coefficient, sw ext coefficient and sw
+single-scattering albedo for stratospheric (volcanic) aerosols for the period
+1850-2004. The historical data (1850-1999) have been supplied by G. Stenchikov
+using, in part, results from Sato. The values for 2000-2004 are equal to the
+December 1999 values, following a suggestion from Stenchikov.
+
+  NOTE: the 2000-2004 values differ from those used in CM/AM models in which
+the 2000 et seq. values assumed zero volcanic influence (ie, extlw/sw = 0).
+They also differ from values used by J. Austin for Ozone assessment
+calculations (which use the 1997-99 average for 2000 et seq.)
+
+asmsw_1850_2004.nc has been renamed asmsw_data.nc
+extlw_1850_2004.nc has been renamed extlw_data.nc
+extsw_1850_2004.nc has been renamed extsw_data.nc
+omgsw_1850_2004.nc has been renamed omgsw_data.nc
+
+OZONE :
+
+The file
+/archive/ds/fms/ozone_input_netcdf/slow_wetdep_bfix_randel_mar05/o3.mon_1859_2004.nc
+contains tropospheric and stratospheric ozone data (mmr) for the period
+1859-2004. It is constructed as given below:
+
+The netCDF time variable is days since 1-1-1800, 0000Z. Data is (always)
+assumed to be on the 15th of the month. The calendar is "julian". The AM/CM
+models contain a module (in interpolator) to set this date for the actual
+mid-month, using a "NOLEAP" calendar, if such is desired. The year 1859 has the
+same data as the year 1860. This year is included for ease of interpolation in
+a model.
+
+This ozone climatology is a blend of four datasets
+ 1) MOZART CTM (surface to linear tropopause)
+ 2) Stratospheric ozone < 50km (Randel, March 2005)
+ 3) 51-56km (Fortuin-Kelder 1990)
+ 4) > 60km (SKYHI climatology)
+ A linear transition is used in the tropopause and 56-60km regions.
+
+Tropospheric ozone is obtained from calculations using the MOZART CTM.
+Calculations are made at 10-year intervals for the period 1860 to 2010.
+Historical emissions are based on the EDGAR-HYDE emissions inventory. Results
+for 2000 and 2010 use the A1B scenario. These calculations include the "slow"
+wet deposition value (0.2*HNO3) for the aerosol species (sulfate, hydrophilic
+BC, hydrophilic OC, ammonium, nitrate). The calculations also include the black
+carbon biomass burning bugfix for 1860-1880. (NB: The ozone and aerosol files
+used in the original CM2.0/2.1 runs did not include this final bugfix.)
+
+Linear interpolation between decadal values is made for the years 1979, 1981-9,
+1991-9 and 2001-4. This is because stratospheric ozone values exist separately
+for all years 1979-2004 and the tropospheric and stratospheric values need to
+be combined to produce a dataset for each year.
+
+The tropospheric ozone values are used up to the linear tropopause. The linear
+tropopause is defined here as the 300 hPa level at the equator , 100 hPa at the
+poles, with a linear (in latitude) variation between equator and poles. Then a
+transition to stratospheric ozone values is made in a layer situated at the
+trop-strat boundary (essentially the pressure-weighted average of the ozone
+values from the strat and trop data). The stratospheric ozone values below 50
+km are data from Randel as obtained in Mar 2005. Data are for the 1979-2004
+period. In the 51-56 km range, a time-invariant ozone value is used, obtained
+from climatological ozone data (Fortuin-Kelder) for 1990. Above 56 km there is
+a linear transition to older climatological values previously used in SKYHI
+calculations. SKYHI values are used exclusively above 60 km.
+
+IMPORTANT ASSUMPTION: Stratospheric ozone for 1860-1978 is the same as the 1979
+value. In contrast, the dataset used for previous AM and CM calculations used
+values for 1860-1975 from an older dataset. This produced a "jump" between 1975
+and 1979 which compromised the interpretation of the effects of strat ozone
+change in the 1970s.
+
+
+o3.mon_1859_2004.nc has been renamed o3.climatology.nc
+
+o3.1860_1990.nc and o3.AM2.nc have been removed.
