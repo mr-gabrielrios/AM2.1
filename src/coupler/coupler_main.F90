@@ -978,15 +978,11 @@ contains
 !the call to fms_io_exit has been moved here
 !this will work for serial code or concurrent (disjoint pelists)
 !but will fail on overlapping but unequal pelists
-    if( Ocean%is_ocean_pe )then
-        call mpp_set_current_pelist(Ocean%pelist)
-        call ocean_model_end (Ocean, Ocean_state, Time)
-    end if
     if( Atm%pe )then
         call mpp_set_current_pelist(Atm%pelist)
         call atmos_model_end (Atm)
-        call  land_model_end (Atmos_land_boundary, Land)
-        call   ice_model_end (Ice)
+        call land_model_end (Atmos_land_boundary, Land)
+        call ice_model_end (Ice)
     end if
 
     !----- write restart file ------
