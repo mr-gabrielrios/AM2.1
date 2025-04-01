@@ -458,60 +458,16 @@ character(len=256), parameter   :: note_header =                                
 !-----------------------------------------------------------------------
 !------ ocean/slow-ice integration loop ------
 
-     if(check_stocks >= 0) then
-        call mpp_set_current_pelist()
-        call flux_init_stocks(Time, Atm, Land, Ice, Ocean_state)
-     endif
-
   do nc = 1, num_cpld_calls
-     if( Atm%pe )then
-        call mpp_set_current_pelist(Atm%pelist)
-        call generate_sfc_xgrid( Land, Ice )
-     end if
-     call mpp_set_current_pelist()
-
-     ! Calls to flux_ocean_to_ice and flux_ice_to_ocean are all PE communication
-     ! points when running concurrently. The calls are placed next to each other in
-     ! concurrent mode to avoid multiple synchronizations within the main loop.
-     ! This is only possible in the serial case when use_lag_fluxes.
-     call flux_ocean_to_ice( Time, Ocean, Ice, Ocean_ice_boundary )
-
-     ! Update Ice_ocean_boundary; first iteration is supplied by restart     
-     if( use_lag_fluxes )then
-        call flux_ice_to_ocean( Time, Ice, Ocean, Ice_ocean_boundary )
-     end if
-
-     ! To print the value of frazil heat flux at the right time the following block
-     ! needs to sit here rather than at the end of the coupler loop.
-     if(check_stocks > 0) then
-        if(check_stocks*((nc-1)/check_stocks) == nc-1 .AND. nc > 1) then
-           call mpp_set_current_pelist()
-           call flux_check_stocks(Time=Time, Atm=Atm, Lnd=Land, Ice=Ice, Ocn_state=Ocean_state)
-        endif
-     endif
-
-     if( Atm%pe )then
-        call mpp_set_current_pelist(Atm%pelist)
-        if (do_ice) call update_ice_model_slow_up( Ocean_ice_boundary, Ice )
 
         !-----------------------------------------------------------------------
         !   ------ atmos/fast-land/fast-ice integration loop -------
-
 
         do na = 1, num_atmos_calls
 
            Time_atmos = Time_atmos + Time_step_atmos
 
-           if (do_atmos) then
-              call atmos_tracer_driver_gather_data(Atm%fields, Atm%tr_bot)
-           endif
-
-           if (do_flux) then
-              !if(do_chksum) call coupler_chksum('sfc-', (nc-1)*num_atmos_calls+na)
-              call sfc_boundary_layer( REAL(dt_atmos), Time_atmos, &
-                   Atm, Land, Ice, Land_ice_atmos_boundary )
-              !if(do_chksum) call coupler_chksum('sfc+', (nc-1)*num_atmos_calls+na)
-           end if
+           call sfc_boundary_layer( REAL(dt_atmos), Time_atmos, Atm, Land, Ice, Land_ice_atmos_boundary )
 
            !      ---- atmosphere down ----
 
