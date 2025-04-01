@@ -460,70 +460,69 @@ character(len=256), parameter   :: note_header =                                
 
   do nc = 1, num_cpld_calls
 
-        !-----------------------------------------------------------------------
-        !   ------ atmos/fast-land/fast-ice integration loop -------
+     !-----------------------------------------------------------------------
+     !   ------ atmos/fast-land/fast-ice integration loop -------
 
-        do na = 1, num_atmos_calls
+     do na = 1, num_atmos_calls
 
-           Time_atmos = Time_atmos + Time_step_atmos
+        Time_atmos = Time_atmos + Time_step_atmos
 
-           call sfc_boundary_layer( REAL(dt_atmos), Time_atmos, Atm, Land, Ice, Land_ice_atmos_boundary )
+        call sfc_boundary_layer( REAL(dt_atmos), Time_atmos, Atm, Land, Ice, Land_ice_atmos_boundary )
 
-           !      ---- atmosphere down ----
+        !      ---- atmosphere down ----
 
-           if (do_atmos) &
-                call update_atmos_model_down( Land_ice_atmos_boundary, Atm )
+        if (do_atmos) &
+             call update_atmos_model_down( Land_ice_atmos_boundary, Atm )
 
-           call flux_down_from_atmos( Time_atmos, Atm, Land, Ice, &
-                Land_ice_atmos_boundary, &
-                Atmos_land_boundary, &
-                Atmos_ice_boundary )
+        call flux_down_from_atmos( Time_atmos, Atm, Land, Ice, &
+             Land_ice_atmos_boundary, &
+             Atmos_land_boundary, &
+             Atmos_ice_boundary )
 
 
-           !      --------------------------------------------------------------
+        !      --------------------------------------------------------------
 
-           !      ---- land model ----
+        !      ---- land model ----
 
-           if (do_land) &
-                call update_land_model_fast( Atmos_land_boundary, Land )
+        if (do_land) &
+             call update_land_model_fast( Atmos_land_boundary, Land )
 
-           !      ---- ice model ----
-           if (do_ice) &
-                call update_ice_model_fast( Atmos_ice_boundary, Ice )
+        !      ---- ice model ----
+        if (do_ice) &
+             call update_ice_model_fast( Atmos_ice_boundary, Ice )
 
-           !      --------------------------------------------------------------
-           !      ---- atmosphere up ----
+        !      --------------------------------------------------------------
+        !      ---- atmosphere up ----
 
-           call flux_up_to_atmos( Time_atmos, Land, Ice, Land_ice_atmos_boundary, &
-                & Atmos_land_boundary, Atmos_ice_boundary )
+        call flux_up_to_atmos( Time_atmos, Land, Ice, Land_ice_atmos_boundary, &
+             & Atmos_land_boundary, Atmos_ice_boundary )
 
-           if (do_atmos) &
-                call update_atmos_model_up( Land_ice_atmos_boundary, Atm )
+        if (do_atmos) &
+             call update_atmos_model_up( Land_ice_atmos_boundary, Atm )
 
-           !--------------
+        !--------------
 
-        enddo
+     enddo
 
-        !   ------ end of atmospheric time step loop -----
-        if (do_land) call update_land_model_slow(Atmos_land_boundary,Land)
-        !-----------------------------------------------------------------------
+     !   ------ end of atmospheric time step loop -----
+     if (do_land) call update_land_model_slow(Atmos_land_boundary,Land)
+     !-----------------------------------------------------------------------
 
-        !
-        !     need flux call to put runoff and p_surf on ice grid
-        !
-        call flux_land_to_ice( Time, Land, Ice, Land_ice_boundary )
+     !
+     !     need flux call to put runoff and p_surf on ice grid
+     !
+     call flux_land_to_ice( Time, Land, Ice, Land_ice_boundary )
 
-        Atmos_ice_boundary%p = 0.0 ! call flux_atmos_to_ice_slow ?
+     Atmos_ice_boundary%p = 0.0 ! call flux_atmos_to_ice_slow ?
 
-        !   ------ slow-ice model ------
+     !   ------ slow-ice model ------
 
-        if (do_ice) then 
-           call update_ice_model_slow_dn( Atmos_ice_boundary, &
-                & Land_ice_boundary, Ice )
-           call flux_ice_to_ocean_stocks(Ice)
-        endif
-        Time = Time_atmos
-     end if                     !Atm%pe block
+     if (do_ice) then 
+        call update_ice_model_slow_dn( Atmos_ice_boundary, &
+             & Land_ice_boundary, Ice )
+        call flux_ice_to_ocean_stocks(Ice)
+     endif
+     Time = Time_atmos
 
      if( .NOT.use_lag_fluxes )then !this will serialize
         call mpp_set_current_pelist()
