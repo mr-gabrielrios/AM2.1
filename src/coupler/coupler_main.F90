@@ -470,26 +470,24 @@ character(len=256), parameter   :: note_header =                                
         call sfc_boundary_layer( REAL(dt_atmos), Time_atmos, Atm, Land, Ice, Land_ice_atmos_boundary )
 
         !      ---- atmosphere down ----
-
-        if (do_atmos) &
-             call update_atmos_model_down( Land_ice_atmos_boundary, Atm )
-
+        ! This contains a call to FV dynamics (fv_dynamics), FV physics (fv_physics_down), which encapsulates the radiation code
+        ! (`radiation_driver`)
+        call update_atmos_model_down( Land_ice_atmos_boundary, Atm )
+        
         call flux_down_from_atmos( Time_atmos, Atm, Land, Ice, &
              Land_ice_atmos_boundary, &
              Atmos_land_boundary, &
              Atmos_ice_boundary )
-
-
+        
         !      --------------------------------------------------------------
-
         !      ---- land model ----
 
         if (do_land) &
              call update_land_model_fast( Atmos_land_boundary, Land )
 
         !      ---- ice model ----
-        if (do_ice) &
-             call update_ice_model_fast( Atmos_ice_boundary, Ice )
+        
+        call update_ice_model_fast( Atmos_ice_boundary, Ice )
 
         !      --------------------------------------------------------------
         !      ---- atmosphere up ----
@@ -524,32 +522,6 @@ character(len=256), parameter   :: note_header =                                
      endif
      Time = Time_atmos
 
-     if( .NOT.use_lag_fluxes )then !this will serialize
-        call mpp_set_current_pelist()
-        call flux_ice_to_ocean( Time, Ice, Ocean, Ice_ocean_boundary )
-     end if
-
-     if( Ocean%is_ocean_pe )then
-        call mpp_set_current_pelist(Ocean%pelist)
-
-        ! update_ocean_model since fluxes don't change here
-
-        if (do_ocean) &
-          call update_ocean_model( Ice_ocean_boundary, Ocean_state,  Ocean, &
-                                   Time_ocean, Time_step_cpld )
-
-        ! Get stocks from "Ice_ocean_boundary" and add them to Ocean stocks.
-        ! This call is just for record keeping of stocks transfer and
-        ! does not modify either Ocean or Ice_ocean_boundary
-        call flux_ocean_from_ice_stocks(Ocean_state, Ocean, Ice_ocean_boundary)
-
-        Time_ocean = Time_ocean +  Time_step_cpld
-
-        !-----------------------------------------------------------------------
-        Time = Time_ocean
-
-     end if
-
      !--- write out intermediate restart file when needed.
      if( Time >= Time_restart ) then
         Time_restart_current = Time
@@ -564,9 +536,6 @@ character(len=256), parameter   :: note_header =                                
            call land_model_restart(timestamp)
            call ice_model_restart(timestamp)
         endif
-        if( Ocean%is_ocean_pe) then
-           call ocean_model_restart(Ocean_state, timestamp)
-        endif
         call coupler_restart(Time, Time_restart_current, timestamp)
      end if
 
@@ -575,19 +544,7 @@ character(len=256), parameter   :: note_header =                                
      write( text,'(a,i4)' )'Main loop at coupling timestep=', nc
      call print_memuse_stats(text)
 
-
   enddo
-
-  if(check_stocks >= 0) then
-     call mpp_set_current_pelist()
-     call flux_check_stocks(Time=Time, Atm=Atm, Lnd=Land, Ice=Ice, Ocn_state=Ocean_state)
-  endif
-
-! Need final update of Ice_ocean_boundary for concurrent restart
-!  if( concurrent )then
-!      call mpp_set_current_pelist()
-!      call flux_ice_to_ocean( Time, Ice, Ocean, Ice_ocean_boundary )
-!  endif
 
   call mpp_set_current_pelist()
 !-----------------------------------------------------------------------
