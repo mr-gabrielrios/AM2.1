@@ -596,8 +596,7 @@ contains
 
     integer :: ens_siz(4), ensemble_size
 
-    integer :: atmos_pe_start=0, atmos_pe_end=0, &
-               ocean_pe_start=0, ocean_pe_end=0
+    integer :: atmos_pe_start=0, atmos_pe_end=0
     integer :: n
     integer :: diag_model_subset=DIAG_ALL
     logical :: other_fields_exist
@@ -702,45 +701,21 @@ contains
     ensemble_size = ens_siz(1)      
     npes = ens_siz(2)              
 
-    !Check for the consistency of PE counts
-    if( concurrent )then
-!atmos_npes + ocean_npes must equal npes
-        if( atmos_npes.EQ.0 )atmos_npes = npes - ocean_npes
-        if( ocean_npes.EQ.0 )ocean_npes = npes - atmos_npes
-!both must now be non-zero
-        if( atmos_npes.EQ.0 .OR. ocean_npes.EQ.0 ) &
-             call mpp_error( FATAL, 'coupler_init: atmos_npes or ocean_npes must be specified for concurrent coupling.' )
-        if( atmos_npes+ocean_npes.NE.npes ) &
-             call mpp_error( FATAL, 'coupler_init: atmos_npes+ocean_npes must equal npes for concurrent coupling.' )
-    else                        !serial timestepping
-        if( atmos_npes.EQ.0 )atmos_npes = npes
-        if( ocean_npes.EQ.0 )ocean_npes = npes
-        if( max(atmos_npes,ocean_npes).EQ.npes )then !overlapping pelists
-            ! do nothing
-        else                    !disjoint pelists
-            if( atmos_npes+ocean_npes.NE.npes ) call mpp_error( FATAL,  &
-                 'coupler_init: atmos_npes+ocean_npes must equal npes for serial coupling on disjoint pelists.' )
-        end if
-    end if    
-
     allocate( Atm%pelist  (atmos_npes) )
-    allocate( Ocean%pelist(ocean_npes) )
 
     !Set up and declare all the needed pelists
-    call ensemble_pelist_setup(concurrent, atmos_npes, ocean_npes, Atm%pelist, Ocean%pelist)
+    call ensemble_pelist_setup(concurrent, atmos_npes, Atm%pelist)
     ensemble_id = get_ensemble_id() 
  
     allocate(ensemble_pelist(1:ensemble_size,1:npes))   
     call get_ensemble_pelist(ensemble_pelist) 
 
     Atm%pe            = ANY(Atm%pelist   .EQ. mpp_pe()) 
-    Ocean%is_ocean_pe = ANY(Ocean%pelist .EQ. mpp_pe())  
     Ice%pe  = Atm%pe
     Land%pe = Atm%pe
  
     !Why is the following needed?
     if( Atm%pe )            call mpp_set_current_pelist( Atm%pelist   )
-    if( Ocean%is_ocean_pe ) call mpp_set_current_pelist( Ocean%pelist )
     
     !Write out messages on root PEs
     if(mpp_pe().EQ.mpp_root_pe() )then
