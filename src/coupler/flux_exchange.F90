@@ -1475,32 +1475,6 @@ subroutine sfc_boundary_layer ( dt, Time, Atm, Land, Ice, Land_Ice_Atmos_Boundar
 
 ! Combine explicit ocean flux and implicit land flux of extra flux fields.
 
-  ! Calculate ocean explicit flux here
-
-  call atmos_ocean_fluxes_calc(ex_gas_fields_atm, ex_gas_fields_ice, ex_gas_fluxes, ex_seawater)
-
-  ! The following statement is a concise version of what's following and worth
-  ! looking into in the future.
-  ! ex_flux_tr(:,itracer) = ex_gas_fluxes%bc(itracer_ocn)%field(ind_flux)%values(:)
-  ! where(ex_seawater.gt.0) ex_flux_tr(:,itracer) = F_ocn
-  do n = 1, ex_gas_fluxes%num_bcs  !{
-    if (ex_gas_fluxes%bc(n)%atm_tr_index .gt. 0) then  !{
-      m = tr_table_map(ex_gas_fluxes%bc(n)%atm_tr_index)%exch
-      do i = 1, size(ex_seawater(:))  !{
-         if (ex_land(i)) cycle  ! over land, don't do anything
-         ! on ocean or ice cells, flux is explicit therefore we zero derivatives. 
-         ex_dfdtr_atm(i,m)  = 0.0
-         ex_dfdtr_surf(i,m) = 0.0
-         if (ex_seawater(i)>0) then
-            ! jgj: convert to kg co2/m2/sec for atm
-            ex_flux_tr(i,m)    = ex_gas_fluxes%bc(n)%field(ind_flux)%values(i) * ex_gas_fluxes%bc(n)%mol_wt * 1.0e-03
-         else 
-            ex_flux_tr(i,m) = 0.0 ! pure ice exchange cell
-        endif  !}
-      enddo  !} i
-    endif  !}
-  enddo  !} n
-
   ! [5.2] override tracer fluxes and derivatives
   do tr = 1,n_exch_tr
      if( tr_table(tr)%atm == NO_TRACER ) cycle ! it should never happen, though
@@ -1512,17 +1486,14 @@ subroutine sfc_boundary_layer ( dt, Time, Atm, Land, Ice, Land_Ice_Atmos_Boundar
      call data_override ( 'LND', 'ex_flux_'//trim(tr_name), diag_land, Time, override=used )
      if(used) call put_to_xgrid ( diag_land, 'LND', ex_flux_tr(:,tr), xmap_sfc )
      call data_override ( 'ICE', 'ex_flux_'//trim(tr_name), sea, Time, override=used )
-     if(used) call put_to_xgrid ( sea, 'OCN', ex_flux_tr(:,tr), xmap_sfc )
      ! [5.2.2] override derivative of flux wrt surface concentration
      call data_override ( 'LND', 'ex_dfd'//trim(tr_name)//'_surf', diag_land, Time, override=used )
      if(used) call put_to_xgrid ( diag_land, 'LND', ex_dfdtr_surf(:,tr), xmap_sfc )
      call data_override ( 'ICE', 'ex_dfd'//trim(tr_name)//'_surf', sea, Time, override=used )
-     if(used) call put_to_xgrid ( sea, 'OCN', ex_dfdtr_surf(:,tr), xmap_sfc )
      ! [5.2.3] override derivative of flux wrt atmospheric concentration
      call data_override ( 'LND', 'ex_dfd'//trim(tr_name)//'_atm', diag_land, Time, override=used )
      if(used) call put_to_xgrid ( diag_land, 'LND', ex_dfdtr_atm(:,tr), xmap_sfc )
      call data_override ( 'ICE', 'ex_dfd'//trim(tr_name)//'_atm', sea, Time, override=used )
-     if(used) call put_to_xgrid ( sea, 'OCN', ex_dfdtr_atm(:,tr), xmap_sfc )
   enddo
 
   ! [5.3] override flux and derivatives for sensible heat flux
@@ -1530,17 +1501,14 @@ subroutine sfc_boundary_layer ( dt, Time, Atm, Land, Ice, Land_Ice_Atmos_Boundar
   call data_override ( 'LND', 'ex_flux_t', diag_land, Time, override=used )
   if (used) call put_to_xgrid ( diag_land, 'LND', ex_flux_t, xmap_sfc )
   call data_override ( 'ICE', 'ex_flux_t', sea, Time, override=used )
-  if (used) call put_to_xgrid ( sea, 'OCN', ex_flux_t, xmap_sfc )
   ! [5.3.2] override derivative of flux wrt near-surface temperature
   call data_override ( 'LND', 'ex_dhdt_surf', diag_land, Time, override=used )
   if (used) call put_to_xgrid ( diag_land, 'LND', ex_dhdt_surf, xmap_sfc )
   call data_override ( 'ICE', 'ex_dhdt_surf', sea, Time, override=used )
-  if (used) call put_to_xgrid ( sea, 'OCN', ex_dhdt_surf, xmap_sfc )
   ! [5.3.3] override derivative of flux wrt atmospheric temperature
   call data_override ( 'LND', 'ex_dhdt_atm', diag_land, Time,override=used )
   if (used) call put_to_xgrid ( diag_land, 'LND', ex_dhdt_atm, xmap_sfc )
   call data_override ( 'ICE', 'ex_dhdt_atm', sea, Time, override=used )
-  if (used) call put_to_xgrid ( sea, 'OCN', ex_dhdt_atm, xmap_sfc )
 
   ! NB: names of the override fields are constructed using tracer name and certain 
   ! prefixes / suffixes. For example, for the tracer named "sphum" (specific humidity) they will be:
@@ -1577,10 +1545,6 @@ subroutine sfc_boundary_layer ( dt, Time, Atm, Land, Ice, Land_Ice_Atmos_Boundar
   call get_from_xgrid (Land_Ice_Atmos_Boundary%b_star,    'ATM', ex_b_star    , xmap_sfc)
   call get_from_xgrid (Land_Ice_Atmos_Boundary%q_star,    'ATM', ex_q_star    , xmap_sfc)
 
-  if (do_forecast) then
-     call get_from_xgrid (Ice%t_surf, 'OCN', ex_t_surf,  xmap_sfc)
-  end if
-
   Land_Ice_Atmos_Boundary%t = Land_Ice_Atmos_Boundary%t ** 0.25
 !Balaji: data_override calls moved here from coupler_main
   call data_override('ATM', 't',         Land_Ice_Atmos_Boundary%t,         Time)
@@ -1604,14 +1568,7 @@ subroutine sfc_boundary_layer ( dt, Time, Atm, Land, Ice, Land_Ice_Atmos_Boundar
   call data_override('ATM', 'b_star',    Land_Ice_Atmos_Boundary%b_star,    Time)
 ! call data_override('ATM', 'q_star',    Land_Ice_Atmos_Boundary%q_star,    Time)
   call data_override('ATM', 'rough_mom', Land_Ice_Atmos_Boundary%rough_mom, Time)
-
-  ! [6.3] save atmos albedo fix and old albedo (for downward SW flux calculations)
-  ! on exchange grid
-  ! allocate ( ex_old_albedo(n_xgrid_sfc)  )
-  ! ex_old_albedo = ex_albedo
   
-!!  STILL NEEDED   ????
-!! IS THIS CORRECT ??
   allocate ( ex_albedo_fix(n_xgrid_sfc) )
   ex_albedo_fix = 0.
   call put_to_xgrid (Land_Ice_Atmos_Boundary%albedo, 'ATM',  ex_albedo_fix, xmap_sfc)
@@ -1641,16 +1598,6 @@ subroutine sfc_boundary_layer ( dt, Time, Atm, Land, Ice, Land_Ice_Atmos_Boundar
  ex_albedo_nir_dif_fix, xmap_sfc)
   ex_albedo_nir_dif_fix = (1.0-ex_albedo_nir_dif) /   &
        (1.0-ex_albedo_nir_dif_fix)
-
-#ifdef SCM
-  if (do_specified_albedo .and. do_specified_land) then
-       ex_albedo_fix = 1.
-       ex_albedo_vis_dir_fix = 1.
-       ex_albedo_vis_dif_fix = 1.
-       ex_albedo_nir_dir_fix = 1.
-       ex_albedo_nir_dif_fix = 1.
-  endif
-#endif
 
   !=======================================================================
   ! [7] diagnostics section
