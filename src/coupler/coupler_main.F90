@@ -722,16 +722,13 @@ contains
        write( text,'(a,2i6,a,i2.2)' )'Atmos PE range: ', Atm%pelist(1)  , Atm%pelist(atmos_npes)  ,&
             ' ens_', ensemble_id
        call mpp_error( NOTE, 'coupler_init: '//trim(text) )
-       write( text,'(a,2i6,a,i2.2)' )'Ocean PE range: ', Ocean%pelist(1), Ocean%pelist(ocean_npes), &
-            ' ens_', ensemble_id
-       call mpp_error( NOTE, 'coupler_init: '//trim(text) )
        if( concurrent )then
           call mpp_error( NOTE, 'coupler_init: Running with CONCURRENT coupling.' )
 
           write( logunit,'(a)' )'Using concurrent coupling...'
           write( logunit,'(a,4i4)' ) &
-               'atmos_pe_start, atmos_pe_end, ocean_pe_start, ocean_pe_end=', &
-               Atm%pelist(1)  , Atm%pelist(atmos_npes), Ocean%pelist(1), Ocean%pelist(ocean_npes) 
+               'atmos_pe_start, atmos_pe_end: ', &
+               Atm%pelist(1)  , Atm%pelist(atmos_npes) 
        else
           call mpp_error( NOTE, 'coupler_init: Running with SERIAL coupling.' )
        end if
@@ -779,9 +776,9 @@ contains
        enddo
        !--- copy maskmap value to each model data type
        allocate(Atm%maskmap(layout_mask(1), layout_mask(2)), Land%maskmap(layout_mask(1), layout_mask(2)) )
-       allocate(Ice%maskmap(layout_mask(1), layout_mask(2)), Ocean%maskmap(layout_mask(1), layout_mask(2)))
+       allocate(Ice%maskmap(layout_mask(1), layout_mask(2)))
        Atm%maskmap = maskmap;  Land%maskmap = maskmap
-       Ice%maskmap = maskmap;  Ocean%maskmap = maskmap
+       Ice%maskmap = maskmap;
        deallocate(maskmap)
     else
        if( layout_mask(1)*layout_mask(2) .NE. 0 ) call mpp_error(NOTE, &
@@ -801,9 +798,6 @@ contains
     if( Atm%pe )then
         call mpp_set_current_pelist(Atm%pelist)
         if(atmos_npes /= npes)diag_model_subset = DIAG_OTHER  ! change diag_model_subset from DIAG_ALL
-    elseif( Ocean%is_ocean_pe )then  ! Error check above for disjoint pelists should catch any problem
-        call mpp_set_current_pelist(Ocean%pelist)
-        if(ocean_npes /= npes)diag_model_subset = DIAG_OCEAN  ! change diag_model_subset from DIAG_ALL
     end if
     call diag_manager_init(DIAG_MODEL_SUBSET=diag_model_subset)   ! initialize diag_manager for processor subset output
     call print_memuse_stats( 'diag_manager_init' )
@@ -913,12 +907,12 @@ contains
 !       before the individual models are initialized.
 !
 
-    call tracer_manager_init
+    ! call tracer_manager_init
 !
 !       Initialize the coupler types
 !
 
-    call coupler_types_init
+    ! call coupler_types_init
 
 !-----------------------------------------------------------------------
 !------ initialize component models ------
@@ -940,95 +934,16 @@ contains
         call print_memuse_stats( 'ice_model_init' )
         call data_override_init(Atm_domain_in = Atm%domain, Ice_domain_in = Ice%domain, Land_domain_in=Land%domain)
     end if
-    if( Ocean%is_ocean_pe )then
-        call mpp_set_current_pelist(Ocean%pelist)
-!---- ocean ---------
-        call ocean_model_init( Ocean, Ocean_state, Time_init, Time )
-        call print_memuse_stats( 'ocean_model_init' )
-        call data_override_init(Ocean_domain_in = Ocean%domain )
-    end if
     call mpp_set_current_pelist(ensemble_pelist(ensemble_id,:))
 
     call mpp_broadcast_domain(Ice%domain)
-    call mpp_broadcast_domain(Ocean%domain)
 !-----------------------------------------------------------------------
 !---- initialize flux exchange module ----
-    call flux_exchange_init ( Time, Atm, Land, Ice, Ocean, Ocean_state,&
+    call flux_exchange_init ( Time, Atm, Land, Ice, &
          atmos_ice_boundary, land_ice_atmos_boundary, &
-         land_ice_boundary, ice_ocean_boundary, ocean_ice_boundary, &
          dt_atmos=dt_atmos, dt_cpld=dt_cpld)
 
     Time_atmos = Time
-    Time_ocean = Time
-
-!
-!       read in extra fields for the air-sea gas fluxes
-!
-
-    if ( Atm%pe ) then
-      call mpp_set_current_pelist(Atm%pelist)
-      allocate(Ice_bc_restart(Ice%ocean_fluxes%num_bcs))
-      allocate(ice_bc_restart_file(Ice%ocean_fluxes%num_bcs))
-      do n = 1, Ice%ocean_fluxes%num_bcs  !{
-        if(Ice%ocean_fluxes%bc(n)%num_fields .LE. 0) cycle
-        filename = trim(Ice%ocean_fluxes%bc(n)%ice_restart_file)
-        do l = 1, num_ice_bc_restart
-           if(trim(filename) == ice_bc_restart_file(l)) exit
-        end do
-        if(l>num_ice_bc_restart) then
-           num_ice_bc_restart = num_ice_bc_restart + 1
-           ice_bc_restart_file(l) = trim(filename)
-        end if
-        filename = 'INPUT/'//trim(filename)
-        other_fields_exist = .false.
-        do m = 1, Ice%ocean_fluxes%bc(n)%num_fields  !{
-          fieldname = trim(Ice%ocean_fluxes%bc(n)%field(m)%name)
-          id_restart = register_restart_field(Ice_bc_restart(l), ice_bc_restart_file(l), &
-                       fieldname, Ice%ocean_fluxes%bc(n)%field(m)%values, Ice%domain    )
-          if (field_exist(filename, fieldname, Ice%domain) ) then
-            other_fields_exist = .true.
-            write (outunit,*) trim(note_header), ' Reading restart info for ',         &
-                 trim(fieldname), ' from ',  trim(filename)
-            call read_data(filename, fieldname, Ice%ocean_fluxes%bc(n)%field(m)%values, Ice%domain)
-          elseif (other_fields_exist) then
-            call mpp_error(FATAL, trim(error_header) // ' Couldn''t find field ' //     &
-                 trim(fieldname) // ' in file ' //trim(filename))
-          endif
-        enddo  !} m
-      enddo  !} n
-    endif
-    if ( Ocean%is_ocean_pe ) then
-      call mpp_set_current_pelist(Ocean%pelist)
-      allocate(Ocn_bc_restart(Ocean%fields%num_bcs))
-      allocate(ocn_bc_restart_file(Ocean%fields%num_bcs))
-      do n = 1, Ocean%fields%num_bcs  !{
-        if(Ocean%fields%bc(n)%num_fields .LE. 0) cycle
-        filename = trim(Ocean%fields%bc(n)%ocean_restart_file)
-        do l = 1, num_ocn_bc_restart
-           if(trim(filename) == ocn_bc_restart_file(l)) exit
-        end do
-        if(l>num_ocn_bc_restart) then
-           num_ocn_bc_restart = num_ocn_bc_restart + 1
-           ocn_bc_restart_file(l) = trim(filename)
-        end if
-        filename = 'INPUT/'//trim(filename)
-        other_fields_exist = .false.
-        do m = 1, Ocean%fields%bc(n)%num_fields  !{
-          fieldname = trim(Ocean%fields%bc(n)%field(m)%name)
-          id_restart = register_restart_field(Ocn_bc_restart(l), Ocn_bc_restart_file(l), &
-                       fieldname, Ocean%fields%bc(n)%field(m)%values, Ocean%domain    )
-          if (field_exist(filename, fieldname, Ocean%domain) ) then
-            other_fields_exist = .true.
-            write (outunit,*) trim(note_header), ' Reading restart info for ',         &
-                 trim(fieldname), ' from ', trim(filename)
-            call read_data(filename, fieldname, Ocean%fields%bc(n)%field(m)%values, Ocean%domain)
-          elseif (other_fields_exist) then
-            call mpp_error(FATAL, trim(error_header) // ' Couldn''t find field ' //     &
-                 trim(fieldname) // ' in file ' //trim(filename))
-          endif
-        enddo  !} m
-      enddo  !} n
-    endif
 
     call mpp_set_current_pelist()
 

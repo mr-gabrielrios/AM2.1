@@ -521,26 +521,21 @@ contains
 !  </IN>
 
 !
-subroutine flux_exchange_init ( Time, Atm, Land, Ice, Ocean, Ocean_state,&
-       atmos_ice_boundary, land_ice_atmos_boundary, &
-       land_ice_boundary, ice_ocean_boundary, ocean_ice_boundary, &
-       dt_atmos, dt_cpld )
+subroutine flux_exchange_init ( Time, Atm, Land, Ice, &
+                                atmos_ice_boundary, & 
+                                land_ice_atmos_boundary, &
+                                dt_atmos, dt_cpld )
 
   type(time_type),                   intent(in)  :: Time
   type(atmos_data_type),             intent(inout)  :: Atm
   type(land_data_type),              intent(in)  :: Land
   type(ice_data_type),               intent(inout)  :: Ice
-  type(ocean_public_type),           intent(inout)  :: Ocean
-  type(ocean_state_type),            pointer        :: Ocean_state
 ! All intent(OUT) derived types with pointer components must be 
 ! COMPLETELY allocated here and in subroutines called from here;
 ! NO pointer components should have been allocated before entry if the
 ! derived type has intent(OUT) otherwise they may be lost.
   type(atmos_ice_boundary_type),     intent(inout) :: atmos_ice_boundary
   type(land_ice_atmos_boundary_type),intent(inout) :: land_ice_atmos_boundary
-  type(land_ice_boundary_type),      intent(inout) :: land_ice_boundary
-  type(ice_ocean_boundary_type),     intent(inout) :: ice_ocean_boundary
-  type(ocean_ice_boundary_type),     intent(inout) :: ocean_ice_boundary
   integer, optional,                 intent(in)    :: dt_atmos, dt_cpld
 
   character(len=64), parameter    :: sub_name = 'flux_exchange_init'
@@ -568,28 +563,9 @@ subroutine flux_exchange_init ( Time, Atm, Land, Ice, Ocean, Ocean_state,&
   character(32) :: tr_name
   logical       :: found
 
-  integer              :: n, npes_atm, npes_ocn, npes_all
+  integer              :: n, npes_atm, npes_all
   integer, allocatable :: pelist(:)
 
-!-----------------------------------------------------------------------
-
-!
-!       initialize atmos_ocean_fluxes
-! Setting up flux types, allocates the arrays.
-!
-
-!
-!       ocean_tracer_flux_init is called first since it has the meaningful value to set
-!       for the input/output file names for the tracer flux values used in restarts. These
-!       values could be set in the field table, and this ordering allows this.
-!       atmos_tracer_flux_init is called last since it will use the values set in 
-!       ocean_tracer_flux_init with the exception of atm_tr_index, which can only
-!       be meaningfully set from the atmospheric model (not from the field table)
-!
-
-    call ocean_model_flux_init(Ocean_state)
-    call atmos_tracer_flux_init
-    call atmos_ocean_fluxes_init(ex_gas_fluxes, ex_gas_fields_atm, ex_gas_fields_ice)
 
 !-----------------------------------------------------------------------
 !----- read namelist -------
@@ -610,8 +586,6 @@ subroutine flux_exchange_init ( Time, Atm, Land, Ice, Ocean, Ocean_state,&
 !      humidity in the tracer table
   call get_number_tracers (MODEL_ATMOS, num_tracers=n_atm_tr_tot, &
                            num_prog=n_atm_tr)
-  call get_number_tracers (MODEL_LAND, num_tracers=n_lnd_tr_tot, &
-                           num_prog=n_lnd_tr)
 
   ! assemble the table of tracer number translation by matching names of
   ! prognostic tracers in the atmosphere and surface models; skip all atmos.
@@ -622,88 +596,24 @@ subroutine flux_exchange_init ( Time, Atm, Land, Ice, Ocean, Ocean_state,&
   do i = 1,n_atm_tr
      call get_tracer_names( MODEL_ATMOS, i, tr_name )
      tr_table(n)%atm = i
-     tr_table(n)%ice = get_tracer_index ( MODEL_ICE,  tr_name )
-     tr_table_map(i)%ice = tr_table(n)%ice
-     tr_table(n)%lnd = get_tracer_index ( MODEL_LAND, tr_name )
-     tr_table_map(i)%lnd = tr_table(n)%lnd
      if(tr_table(n)%ice/=NO_TRACER.or.tr_table(n)%lnd/=NO_TRACER) then
        tr_table_map(i)%exch = n
        n = n + 1
      endif
   enddo
   n_exch_tr = n - 1
-  !
-  !     Set up tracer table entries for ocean-atm gas fluxes where the names of tracers in the
-  !     atmosphere and ocean may not be equal
-  !
-  do n = 1, ex_gas_fluxes%num_bcs  !{
-    if (ex_gas_fluxes%bc(n)%atm_tr_index .gt. 0) then  !{
-      found = .false.
-      do i = 1, n_exch_tr  !{
-        if (ex_gas_fluxes%bc(n)%atm_tr_index .eq. tr_table(i)%atm) then
-          found = .true.
-          exit
-        endif
-      enddo  !} i
-      if (.not. found) then
-        n_exch_tr = n_exch_tr + 1
-        tr_table(n_exch_tr)%atm = ex_gas_fluxes%bc(n)%atm_tr_index
-        tr_table(n_exch_tr)%ice = NO_TRACER ! because ocean-atm gas fluxes are not held in the ice model as tracers
-        tr_table(n_exch_tr)%lnd = NO_TRACER ! because this would have been found above
-        tr_table_map(n_exch_tr)%exch = n_exch_tr
-        tr_table_map(n_exch_tr)%ice = tr_table(n_exch_tr)%ice
-        tr_table_map(n_exch_tr)%lnd = tr_table(n_exch_tr)%lnd
-      endif
-    endif  !}
-  enddo  !} n
-  write(outunit,*) trim(note_header), ' Number of exchanged tracers = ', n_exch_tr
-  write(logunit,*) trim(note_header), ' Number of exchanged tracers = ', n_exch_tr
-  do i = 1,n_exch_tr
-     call get_tracer_names( MODEL_ATMOS, tr_table(i)%atm, tr_name )
-     write(outunit,*)'Tracer field name :'//trim(tr_name)
-     write(logunit,*)'Tracer field name :'//trim(tr_name)
-  enddo
-
-  ! find out which tracer is specific humidity
-
-  ! +fix-me-slm+ specific humidity may not be present if we are running with
-  ! dry atmosphere. Besides, model may use mixing ratio ('mix_rat') (?). However,
-  ! some atmos code also assumes 'sphum' is present, so for now the following
-  ! code may be good enough.
-
-  do i = 1,n_exch_tr
-     call get_tracer_names( MODEL_ATMOS, tr_table(i)%atm, tr_name )
-     if(lowercase(tr_name)=='sphum') then
-        isphum = i
-     endif
-  ! jgj: find out which exchange tracer is co2
-     if(lowercase(tr_name)=='co2') then
-        ico2 = i
-        write(outunit,*)'Exchange tracer index for '//trim(tr_name),' : ',ico2
-     endif
-  enddo
 
   if (isphum==NO_TRACER) then
      call error_mesg('flux_exchange_mod',&
           'tracer "sphum" must be present in the atmosphere', FATAL )
   endif
 
-  if (ico2==NO_TRACER) then
-     call error_mesg('flux_exchange_mod',&
-          'tracer "co2" not present in the atmosphere', NOTE )
-  endif
-
 !--------- read gridspec file ------------------
 !only atmos pelists needs to do it here, ocean model will do it elsewhere
 
     ice_pe = Atm%pe
-    ocn_pe = Ocean%is_ocean_pe
     allocate( ice_pelist(size(Atm%pelist)) ) !if ice/land become concurrent, this won't be true...
     ice_pelist(:) = Atm%pelist(:)
-    allocate( ocn_pelist(size(Ocean%pelist)) )
-    ocn_pelist(:) = Ocean%pelist(:)
-
-    call get_ocean_model_area_elements(Ocean%domain, grid_file)
 
     if( Atm%pe )then
        call mpp_set_current_pelist(Atm%pelist)
@@ -830,25 +740,25 @@ subroutine flux_exchange_init ( Time, Atm, Land, Ice, Ocean, Ocean_state,&
         end if
 
  
-        call xgrid_init(remap_method)
+    !     call xgrid_init(remap_method)
 
-        call setup_xmap(xmap_sfc, (/ 'ATM', 'OCN', 'LND' /),   &
-             (/ Atm%Domain, Ice%Domain, Land%Domain /),        &
-             "INPUT/grid_spec.nc", Atm%grid)
-        ! exchange grid indices
-        X1_GRID_ATM = 1; X1_GRID_ICE = 2; X1_GRID_LND = 3;
-        call generate_sfc_xgrid( Land, Ice )
-        if (n_xgrid_sfc.eq.1) write (*,'(a,i4,6x,a)') 'PE = ', mpp_pe(), 'Surface exchange size equals one.'
+    !     call setup_xmap(xmap_sfc, (/ 'ATM', 'OCN', 'LND' /),   &
+    !          (/ Atm%Domain, Ice%Domain, Land%Domain /),        &
+    !          "INPUT/grid_spec.nc", Atm%grid)
+    !     ! exchange grid indices
+    !     X1_GRID_ATM = 1; X1_GRID_ICE = 2; X1_GRID_LND = 3;
+    !     call generate_sfc_xgrid( Land, Ice )
+    !     if (n_xgrid_sfc.eq.1) write (*,'(a,i4,6x,a)') 'PE = ', mpp_pe(), 'Surface exchange size equals one.'
 
-        if (do_runoff) then
-           call setup_xmap(xmap_runoff, (/ 'LND', 'OCN' /),       &
-                (/ Land%Domain, Ice%Domain /),                    &
-                "INPUT/grid_spec.nc"             )
-           ! exchange grid indices
-           X2_GRID_LND = 1; X2_GRID_ICE = 2;
-           n_xgrid_runoff = max(xgrid_count(xmap_runoff),1)
-           if (n_xgrid_runoff.eq.1) write (*,'(a,i4,6x,a)') 'PE = ', mpp_pe(), 'Runoff  exchange size equals one.'
-        endif
+    !     if (do_runoff) then
+    !        call setup_xmap(xmap_runoff, (/ 'LND', 'OCN' /),       &
+    !             (/ Land%Domain, Ice%Domain /),                    &
+    !             "INPUT/grid_spec.nc"             )
+    !        ! exchange grid indices
+    !        X2_GRID_LND = 1; X2_GRID_ICE = 2;
+    !        n_xgrid_runoff = max(xgrid_count(xmap_runoff),1)
+    !        if (n_xgrid_runoff.eq.1) write (*,'(a,i4,6x,a)') 'PE = ', mpp_pe(), 'Runoff  exchange size equals one.'
+    !     endif
 
 !-----------------------------------------------------------------------
 
@@ -914,16 +824,6 @@ subroutine flux_exchange_init ( Time, Atm, Land, Ice, Ocean, Ocean_state,&
         call coupler_type_copy(ex_gas_fluxes, atmos_ice_boundary%fluxes, is, ie, js, je, kd,    &
              mod_name, Ice%axes, Time, suffix = '_atm_ice')
   
-!allocate land_ice_boundary
-        allocate( land_ice_boundary%runoff(is:ie,js:je) )
-        allocate( land_ice_boundary%calving(is:ie,js:je) )
-        allocate( land_ice_boundary%runoff_hflx(is:ie,js:je) )
-        allocate( land_ice_boundary%calving_hflx(is:ie,js:je) )
-! initialize values for override experiments (mjh)
-        land_ice_boundary%runoff=0.0
-        land_ice_boundary%calving=0.0
-        land_ice_boundary%runoff_hflx=0.0
-        land_ice_boundary%calving_hflx=0.0
 !allocate land_ice_atmos_boundary
         call mpp_get_compute_domain( Atm%domain, is, ie, js, je )
         allocate( land_ice_atmos_boundary%t(is:ie,js:je) )
@@ -962,13 +862,6 @@ subroutine flux_exchange_init ( Time, Atm, Land, Ice, Ocean, Ocean_state,&
         land_ice_atmos_boundary%q_star=0.0
         land_ice_atmos_boundary%rough_mom=0.01
 
-! allocate fields for extra tracers
-! The first call is no longer necessary, the fluxes will be passed by the land module
-! The 2nd call is useful in the case of a ocean model only simulation
-!
-        call coupler_type_copy(ex_gas_fields_atm, Atm%fields, is, ie, js, je,                   &
-             mod_name, Atm%axes(1:2), Time, suffix = '_atm')
-
 !Balaji: clocks on atm%pe only        
     cplClock = mpp_clock_id( 'Land-ice-atm coupler', flags=clock_flag_default, grain=CLOCK_COMPONENT )
     sfcClock = mpp_clock_id( 'SFC boundary layer', flags=clock_flag_default, grain=CLOCK_SUBCOMPONENT )
@@ -981,116 +874,14 @@ subroutine flux_exchange_init ( Time, Atm, Land, Ice, Ocean, Ocean_state,&
     !--- With the consideration of concurrent and series run. Also make sure pelist is monotonically increasing.
     !--- Here we can not simply call mpp_set_current_pelist() because of ensemble. The ocean_pe(n) 
     !--- should either equal to atmos_pe(n) or greater than atmos%pelist(npes_atm)
-    npes_ocn = size(Ocean%pelist(:))
     npes_atm = size(Atm%pelist(:))      
-    allocate(pelist(npes_ocn+npes_atm))
+    allocate(pelist(npes_atm))
     pelist(1:npes_atm) = Atm%pelist(1:npes_atm)
     npes_all = npes_atm
-    do n = 1, npes_ocn
-       if( n <= npes_atm ) then
-          if( Ocean%pelist(n) == Atm%pelist(n) ) cycle
-       endif
-       if( Ocean%pelist(n) < Atm%pelist(npes_atm) ) call mpp_error( FATAL, &
-           'flux_exchange_init: ocean%pelist(n) should equal to atm%pelist(n) or greater than any atmos pes' )
-       npes_all = npes_all + 1
-       pelist(npes_all) = Ocean%pelist(n)
-    enddo
 
     call mpp_set_current_pelist(pelist(1:npes_all) )
     deallocate(pelist)
 
-!ocean_ice_boundary and ice_ocean_boundary must be done on all PES
-!domain boundaries will assure no space is allocated on non-relevant PEs.
-    call mpp_get_compute_domain( Ice%domain, is, ie, js, je )
-!allocate ocean_ice_boundary
-    allocate( ocean_ice_boundary%u(is:ie,js:je) )
-    allocate( ocean_ice_boundary%v(is:ie,js:je) )
-    allocate( ocean_ice_boundary%t(is:ie,js:je) )
-    allocate( ocean_ice_boundary%s(is:ie,js:je) )
-!frazil and sea_level are optional, if not present they should be nullified
-    allocate( ocean_ice_boundary%frazil(is:ie,js:je) )
-    allocate( ocean_ice_boundary%sea_level(is:ie,js:je) )
-! initialize boundary fields for override experiments (mjh)
-    ocean_ice_boundary%u=0.0
-    ocean_ice_boundary%v=0.0
-    ocean_ice_boundary%t=273.0
-    ocean_ice_boundary%s=0.0
-    ocean_ice_boundary%frazil=0.0
-    ocean_ice_boundary%sea_level=0.0
-
-!
-! allocate fields for extra tracers
-! Copying gas flux fields from ice to ocean_ice boundary
-
-    call coupler_type_copy(ex_gas_fields_ice, ocean_ice_boundary%fields, is, ie, js, je,        &
-         'ice_flux', Ice%axes(1:2), Time, suffix = '_ocn_ice')
-
-!allocate ice_ocean_boundary
-    call mpp_get_compute_domain( Ocean%domain, is, ie, js, je )
-!ML ocean only requires t, q, lw, sw, fprec, calving
-!AMIP ocean needs no input fields
-!choice of fields will eventually be done at runtime
-!via field_manager
-    allocate( ice_ocean_boundary%u_flux   (is:ie,js:je) )
-    allocate( ice_ocean_boundary%v_flux   (is:ie,js:je) )
-    allocate( ice_ocean_boundary%t_flux   (is:ie,js:je) )
-    allocate( ice_ocean_boundary%q_flux   (is:ie,js:je) )
-    allocate( ice_ocean_boundary%salt_flux(is:ie,js:je) )
-    allocate( ice_ocean_boundary%lw_flux  (is:ie,js:je) )
-    allocate( ice_ocean_boundary%sw_flux_vis_dir  (is:ie,js:je) )
-    allocate( ice_ocean_boundary%sw_flux_vis_dif  (is:ie,js:je) )
-    allocate( ice_ocean_boundary%sw_flux_nir_dir  (is:ie,js:je) )
-    allocate( ice_ocean_boundary%sw_flux_nir_dif  (is:ie,js:je) )
-    allocate( ice_ocean_boundary%lprec    (is:ie,js:je) )
-    allocate( ice_ocean_boundary%fprec    (is:ie,js:je) )
-    allocate( ice_ocean_boundary%runoff   (is:ie,js:je) )
-    allocate( ice_ocean_boundary%calving  (is:ie,js:je) )
-    allocate( ice_ocean_boundary%runoff_hflx   (is:ie,js:je) )
-    allocate( ice_ocean_boundary%calving_hflx  (is:ie,js:je) )
-    allocate( ice_ocean_boundary%p        (is:ie,js:je) )
-
-!
-! allocate fields for extra tracers
-!
-
-    call coupler_type_copy(ex_gas_fluxes, ice_ocean_boundary%fluxes, is, ie, js, je,    &
-         'ocean_flux', Ocean%axes(1:2), Time, suffix = '_ice_ocn')
-
-    call coupler_type_copy(ex_gas_fields_ice, Ocean%fields, is, ie, js, je,             &
-         'ocean_flux', Ocean%axes(1:2), Time, suffix = '_ocn')
-
-!pjp Why are the above not initialized to zero?
-! initialize boundary values for override experiments
-    ocean_ice_boundary%xtype = REDIST
-    if( Ocean%domain.EQ.Ice%domain )ocean_ice_boundary%xtype = DIRECT
-    ice_ocean_boundary%xtype = ocean_ice_boundary%xtype
-
-
-!
-! allocate fields amd fluxes for extra tracers for the Ice type
-!
-
-    call mpp_get_compute_domain( Ice%domain, is, ie, js, je )
-    kd = size(Ice%ice_mask,3)
-    call coupler_type_copy(ex_gas_fields_ice, Ice%ocean_fields, is, ie, js, je, kd,     &
-         'ice_flux', Ice%axes, Time, suffix = '_ice')
-
-    call coupler_type_copy(ex_gas_fluxes, Ice%ocean_fluxes, is, ie, js, je,             &
-         'ice_flux', Ice%axes(1:2), Time, suffix = '_ice')
-
-    call coupler_type_copy(ex_gas_fluxes, Ice%ocean_fluxes_top, is, ie, js, je, kd,     &
-         'ice_flux', Ice%axes, Time, suffix = '_ice_top')
-
-!       initialize the Ocean type for extra fields for surface fluxes
-! Same allocation of arrays and stuff
-!       (this must be done after the Ocean fields are allocated as the fields on the Ocean%fields
-!       are read in in this subroutine)
-!
-
-    if ( Ocean%is_ocean_pe ) then
-      call mpp_set_current_pelist(Ocean%pelist)
-      call ocean_model_init_sfc(Ocean_state, Ocean)
-    end if
     call mpp_set_current_pelist()
 
     ! required by stock_move, all fluxes used to update stocks will be zero if dt_atmos,
@@ -1100,14 +891,6 @@ subroutine flux_exchange_init ( Time, Atm, Land, Ice, Ocean, Ocean_state,&
     if(present(dt_atmos)) Dt_atm = dt_atmos
     if(present(dt_cpld )) Dt_cpl = dt_cpld
  
-    !z1l check the flux conservation.
-    if(debug_stocks) call check_flux_conservation(Ice, Ocean, Ice_Ocean_Boundary)
-
-
-!Balaji
-    cplOcnClock = mpp_clock_id( 'Ice-ocean coupler', flags=clock_flag_default, grain=CLOCK_COMPONENT )
-    fluxIceOceanClock = mpp_clock_id( 'Flux ice to ocean', flags=clock_flag_default, grain=CLOCK_ROUTINE )
-    fluxOceanIceClock = mpp_clock_id( 'Flux ocean to ice', flags=clock_flag_default, grain=CLOCK_ROUTINE )
 !---- done ----
     do_init = .false.
 
