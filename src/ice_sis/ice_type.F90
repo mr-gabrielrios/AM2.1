@@ -473,12 +473,14 @@ public  :: iceClock
           if( wett(i,j) > 0.5 ) then
              Ice % mask(i,j) = .true.
           else
-             Ice % mask(i,j) = .false.
+             ! Ice % mask(i,j) = .false.
+             Ice % mask(i,j) = .true.
           end if
           if( wetv(i,j) > 0.5 ) then
              Ice % vmask(i,j) = 1.
           else
-             Ice % vmask(i,j) = 0.
+             ! Ice % vmask(i,j) = 0.
+             Ice % vmask(i,j) = 1.
           end if
        enddo
     enddo

@@ -1268,50 +1268,6 @@ subroutine sfc_boundary_layer ( dt, Time, Atm, Land, Ice, Land_Ice_Atmos_Boundar
        ex_e_q_n    (n_xgrid_sfc),  &
        ex_land     (n_xgrid_sfc)   )
 
-#ifdef SCM
-  allocate ( &
-       ex_dhdt_surf_forland(n_xgrid_sfc), &
-       ex_dedt_surf_forland(n_xgrid_sfc), &
-       ex_dedq_surf_forland(n_xgrid_sfc)  )
-#endif
-
-! Actual allocation of exchange fields for ocean_ice boundary
-  do n = 1, ex_gas_fields_ice%num_bcs  !{
-    do m = 1, ex_gas_fields_ice%bc(n)%num_fields  !{
-      if (associated(ex_gas_fields_ice%bc(n)%field(m)%values)) then  !{
-        call mpp_error( FATAL, 'sfc_boundary_layer: ex_gas_fields_ice already allocated.' )
-      endif  !}
-      allocate ( ex_gas_fields_ice%bc(n)%field(m)%values(n_xgrid_sfc) )
-      ex_gas_fields_ice%bc(n)%field(m)%values = 0.0
-    enddo  !} m
-  enddo  !} n
-
-  do n = 1, ex_gas_fields_atm%num_bcs  !{
-    do m = 1, ex_gas_fields_atm%bc(n)%num_fields  !{
-      if (associated(ex_gas_fields_atm%bc(n)%field(m)%values)) then  !{
-        call mpp_error( FATAL, 'sfc_boundary_layer: ex_gas_fields_atm already allocated.' )
-      endif  !}
-      allocate ( ex_gas_fields_atm%bc(n)%field(m)%values(n_xgrid_sfc) )
-      ex_gas_fields_atm%bc(n)%field(m)%values = 0.0
-    enddo  !} m
-  enddo  !} n
-
-  do n = 1, ex_gas_fluxes%num_bcs  !{
-    do m = 1, ex_gas_fluxes%bc(n)%num_fields  !{
-      if (associated(ex_gas_fluxes%bc(n)%field(m)%values)) then  !{
-        call mpp_error( FATAL, 'sfc_boundary_layer: ex_gas_fluxes already allocated.' )
-      endif  !}
-      allocate ( ex_gas_fluxes%bc(n)%field(m)%values(n_xgrid_sfc) )
-      ex_gas_fluxes%bc(n)%field(m)%values = 0.0
-    enddo  !} m
-  enddo  !} n
-
-!
-!       Call the atmosphere tracer driver to gather the data needed for extra gas tracers
-! For ocean only model
-
-!  call atmos_get_fields_for_flux(Atm)
-
   ! [3] initialize some values on exchange grid: this is actually a safeguard
   ! against using undefined values
   ex_t_surf   = 200.
@@ -1337,45 +1293,7 @@ subroutine sfc_boundary_layer ( dt, Time, Atm, Land, Ice, Land_Ice_Atmos_Boundar
   call data_override ('ATM', 'p_surf', Atm%p_surf, Time)
   call data_override ('ATM', 'slp',    Atm%slp,    Time)
   call data_override ('ATM', 'gust',   Atm%gust,   Time)
-!
-! jgj: 2008/07/18 
-! FV atm advects tracers in moist mass mixing ratio: kg co2 /(kg air + kg water)
-! cubed sphere advects moist mass mixing ratio also (per SJ)
-! data table co2 overrides for ocean (co2_flux_pcair_atm)
-! and land (co2_bot) should be in dry vmr (mol/mol) units.
-!  ATM: co2_flux_pcair_atm : to override atm_btm layer to send to ocean
-!  ATM: co2_bot            : to override atm_btm layer to send to land
-
-! data override for co2 to be passed to land/photosynthesis (co2_bot)
-! land co2 data override is in dry_vmr units, so convert to wet_mmr for land model.
-! co2mmr = (wco2/wair) * co2vmr;  wet_mmr = dry_mmr * (1-Q)
-!
-  do tr = 1,n_atm_tr
-     call get_tracer_names( MODEL_ATMOS, tr, tr_name )
-     call data_override('ATM', trim(tr_name)//'_bot', Atm%tr_bot(:,:,tr), Time, override=used)
-! conversion for land co2 data override from dry vmr to moist mmr
-     if (used .and. lowercase(trim(tr_name)).eq.'co2') then
-       Atm%tr_bot(:,:,tr) = Atm%tr_bot(:,:,tr) * (WTMCO2/WTMAIR) *    &
-                            (1.0 - Atm%tr_bot(:,:,isphum))
-     end if
-  enddo
-! data override for co2 to be passed to ocean (co2_flux_pcair_atm) 
-! atmos_co2.F90 already called: converts tr_bot passed to ocean via gas_flux   
-! from moist mmr to dry vmr.
-  do n = 1, atm%fields%num_bcs  !{
-    do m = 1, atm%fields%bc(n)%num_fields  !{
-      call data_override('ATM', atm%fields%bc(n)%field(m)%name,      &
-           atm%fields%bc(n)%field(m)%values, Time, override = atm%fields%bc(n)%field(m)%override)
-      ex_gas_fields_atm%bc(n)%field(m)%override = atm%fields%bc(n)%field(m)%override
-    enddo  !} m
-  enddo  !} n
-  do n = 1, atm%fields%num_bcs  !{
-     if (atm%fields%bc(n)%use_atm_pressure) then  !{
-        if (.not. atm%fields%bc(n)%field(ind_psurf)%override) then  !{
-           atm%fields%bc(n)%field(ind_psurf)%values = Atm%p_surf
-        endif  !}
-     endif  !}
-  enddo  !} n
+  
   call data_override ('ICE', 't_surf',     Ice%t_surf,      Time)
   call data_override ('ICE', 'rough_mom',  Ice%rough_mom,   Time)
   call data_override ('ICE', 'rough_heat', Ice%rough_heat,  Time)
@@ -1451,28 +1369,28 @@ subroutine sfc_boundary_layer ( dt, Time, Atm, Land, Ice, Land_Ice_Atmos_Boundar
   ! [4.2] put ice quantities onto exchange grid
   ! (assume that ocean quantites are stored in no ice partition)
   ! (note: ex_avail is true at ice and ocean points)
-  call put_to_xgrid (Ice%t_surf,      'OCN', ex_t_surf,      xmap_sfc)
-  call put_to_xgrid (Ice%rough_mom,   'OCN', ex_rough_mom,   xmap_sfc)
-  call put_to_xgrid (Ice%rough_heat,  'OCN', ex_rough_heat,  xmap_sfc)
-  call put_to_xgrid (Ice%rough_moist, 'OCN', ex_rough_moist, xmap_sfc)
-  call put_to_xgrid (Ice%albedo,      'OCN', ex_albedo,      xmap_sfc)
-  call put_to_xgrid (Ice%albedo_vis_dir, 'OCN', ex_albedo_vis_dir, xmap_sfc)
-  call put_to_xgrid (Ice%albedo_nir_dir, 'OCN', ex_albedo_nir_dir, xmap_sfc)
-  call put_to_xgrid (Ice%albedo_vis_dif, 'OCN', ex_albedo_vis_dif, xmap_sfc)
-  call put_to_xgrid (Ice%albedo_nir_dif, 'OCN', ex_albedo_nir_dif, xmap_sfc)
-  call put_to_xgrid (Ice%u_surf,      'OCN', ex_u_surf,      xmap_sfc)
-  call put_to_xgrid (Ice%v_surf,      'OCN', ex_v_surf,      xmap_sfc)
+  ! call put_to_xgrid (Ice%t_surf,      'OCN', ex_t_surf,      xmap_sfc)
+  ! call put_to_xgrid (Ice%rough_mom,   'OCN', ex_rough_mom,   xmap_sfc)
+  ! call put_to_xgrid (Ice%rough_heat,  'OCN', ex_rough_heat,  xmap_sfc)
+  ! call put_to_xgrid (Ice%rough_moist, 'OCN', ex_rough_moist, xmap_sfc)
+  ! call put_to_xgrid (Ice%albedo,      'OCN', ex_albedo,      xmap_sfc)
+  ! call put_to_xgrid (Ice%albedo_vis_dir, 'OCN', ex_albedo_vis_dir, xmap_sfc)
+  ! call put_to_xgrid (Ice%albedo_nir_dir, 'OCN', ex_albedo_nir_dir, xmap_sfc)
+  ! call put_to_xgrid (Ice%albedo_vis_dif, 'OCN', ex_albedo_vis_dif, xmap_sfc)
+  ! call put_to_xgrid (Ice%albedo_nir_dif, 'OCN', ex_albedo_nir_dif, xmap_sfc)
+  ! call put_to_xgrid (Ice%u_surf,      'OCN', ex_u_surf,      xmap_sfc)
+  ! call put_to_xgrid (Ice%v_surf,      'OCN', ex_v_surf,      xmap_sfc)
 
-  do n = 1, ice%ocean_fields%num_bcs  !{
-    do m = 1, ice%ocean_fields%bc(n)%num_fields  !{
-      call put_to_xgrid (Ice%ocean_fields%bc(n)%field(m)%values, 'OCN',      &
-           ex_gas_fields_ice%bc(n)%field(m)%values, xmap_sfc)
-    enddo  !} m
-  enddo  !} n
-  sea = 0.0; sea(:,:,1) = 1.0;
-  ex_seawater = 0.0
-  call put_to_xgrid (sea,             'OCN', ex_seawater,    xmap_sfc)
-  ex_t_ca = ex_t_surf ! slm, Mar 20 2002 to define values over the ocean
+ !  do n = 1, ice%ocean_fields%num_bcs  !{
+ !    do m = 1, ice%ocean_fields%bc(n)%num_fields  !{
+ !      call put_to_xgrid (Ice%ocean_fields%bc(n)%field(m)%values, 'OCN',      &
+ !           ex_gas_fields_ice%bc(n)%field(m)%values, xmap_sfc)
+ !    enddo  !} m
+ !  enddo  !} n
+ !  sea = 0.0; sea(:,:,1) = 1.0;
+ !  ex_seawater = 0.0
+ !  call put_to_xgrid (sea,             'OCN', ex_seawater,    xmap_sfc)
+ !  ex_t_ca = ex_t_surf ! slm, Mar 20 2002 to define values over the ocean
 
   ! [4.3] put land quantities onto exchange grid ----
   call some(xmap_sfc, ex_land, 'LND')
@@ -1507,28 +1425,6 @@ subroutine sfc_boundary_layer ( dt, Time, Atm, Land, Ice, Land_Ice_Atmos_Boundar
   ex_land_frac = 0.0
   call put_logical_to_real (Land%mask,    'LND', ex_land_frac, xmap_sfc)
 
-#ifdef SCM
-  if (do_specified_land) then
-       if (do_specified_albedo) then
-            ex_albedo = ALBEDO_OBS
-            ex_albedo_vis_dir = ALBEDO_OBS
-            ex_albedo_nir_dir = ALBEDO_OBS
-            ex_albedo_vis_dif = ALBEDO_OBS
-            ex_albedo_nir_dif = ALBEDO_OBS
-       endif
-       if (do_specified_tskin) then
-            ex_t_surf = TSKIN
-            ex_t_ca   = TSKIN
-            ex_tr_surf(:,isphum) = 15.e-3
-       endif
-       if (do_specified_rough_leng) then
-            ex_rough_mom   = ROUGH_MOM
-            ex_rough_heat  = ROUGH_HEAT
-            ex_rough_moist = ROUGH_HEAT
-       endif
-  endif
-#endif
-
   if (do_forecast) then
      ex_t_surf = ex_t_surf_miz
   end if
@@ -1548,29 +1444,6 @@ subroutine sfc_boundary_layer ( dt, Time, Atm, Land, Ice, Land_Ice_Atmos_Boundar
        ex_dhdt_atm,  ex_dfdtr_atm(:,isphum),  ex_dtaudu_atm, ex_dtaudv_atm,       &
        dt,                                                             &
        ex_land, ex_seawater .gt. 0,  ex_avail                          )
-
-#ifdef SCM
-! Option to override surface fluxes for SCM
-  if (do_specified_flux) then
-
-    call scm_surface_flux ( &
-       ex_t_atm, ex_tr_atm(:,isphum),  ex_u_atm, ex_v_atm,  ex_p_atm,  ex_z_atm,  &
-       ex_p_surf,ex_t_surf, ex_t_ca,  ex_tr_surf(:,isphum),                       &
-       ex_u_surf, ex_v_surf,                                                      &
-       ex_rough_mom, ex_rough_heat, ex_rough_moist, ex_rough_scale,               &
-       ex_gust,                                                                   &
-       ex_flux_t, ex_flux_tr(:,isphum), ex_flux_lw, ex_flux_u, ex_flux_v,         &
-       ex_cd_m,   ex_cd_t, ex_cd_q,                                               &
-       ex_wind,   ex_u_star, ex_b_star, ex_q_star,                                &
-       ex_dhdt_surf, ex_dedt_surf, ex_dfdtr_surf(:,isphum),  ex_drdt_surf,        &
-       ex_dhdt_atm,  ex_dfdtr_atm(:,isphum),  ex_dtaudu_atm, ex_dtaudv_atm,       &
-       dt,                                                                        &
-       ex_land, ex_seawater .gt. 0,  ex_avail,                                    &
-       ex_dhdt_surf_forland,  ex_dedt_surf_forland,  ex_dedq_surf_forland  )
-
-  endif
-#endif
-
   zrefm = 10.0
   zrefh = z_ref_heat
   !      ---- optimize calculation ----
